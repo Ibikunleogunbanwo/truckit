@@ -1,4 +1,4 @@
-// ContinueWithLogin.jsx
+
 import Link from 'next/link';
 
 const ContinueWithLogin = ({
