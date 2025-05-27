@@ -8,6 +8,7 @@ import serviceright from "../../assets/images/services-right.png";
 import Navbar from "../../components/navbar";
 import MyDatePicker from "@/components/datepicker";
 import truck from "../../assets/images/truck.png"
+import MyTimePicker from "@/components/timepicker";
 
 const Home = () => {
   return (
@@ -30,7 +31,8 @@ const Home = () => {
               <MyDatePicker />
               <MyDatePicker />
               <MyDatePicker />
-              <MyDatePicker />
+              <MyTimePicker />
+              
             </div>
 
             <ContinueWithLogin

@@ -11,7 +11,6 @@ export default function MyDatePicker() {
   const today = new Date();
   const formatted = today.toLocaleDateString();
 
-  console.log(startDate)
 
   return (
     <div className="relative w-full h-16">
