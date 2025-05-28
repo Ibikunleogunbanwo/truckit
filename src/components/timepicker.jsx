@@ -61,10 +61,20 @@ export default function TimeRangeSelector() {
         </div>
 
         {/* TO SELECT */}
+        <div className="relative w-1/2">
+        <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+            <Image
+              src={TimeIcon}
+              alt="calendar icon"
+              width={20}
+              height={20}
+              className="h-5 w-5 text-black/80"
+            />
+          </span>
         <select
           value={toTime}
           onChange={(e) => setToTime(e.target.value)}
-          className="w-1/2 h-16 px-4 text-sm text-black/80 focus:outline-none bg-white"
+          className="w-full h-16 pl-10 pr-4 border-r-0 border-gray-300 text-sm text-black/80 focus:outline-none bg-white"
         >
           <option value="" disabled>
             12:00
@@ -77,6 +87,7 @@ export default function TimeRangeSelector() {
               </option>
             ))}
         </select>
+        </div>
       </div>
     </div>
   );

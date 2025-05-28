@@ -9,17 +9,20 @@ import Navbar from "../../components/navbar";
 import MyDatePicker from "@/components/datepicker";
 import truck from "../../assets/images/truck.png"
 import MyTimePicker from "@/components/timepicker";
+import Locationpicker from "@/components/locationpicker";
+import pickup from "../../assets/images/img-location.png"
+import dropoff from "../../assets/images/img-dropoff.png"
 
 const Home = () => {
   return (
     <div id="main" className="min-h-screen bg-white w-full">
       <Navbar />
       <div id="Hero-Section"
-        className="flex flex-col-reverse lg:flex-row p-4 my-10"
+        className="flex flex-col-reverse lg:flex-row p-4 my-10 "
       >
         <div className="flex-1  ">
           <div className="grid p-4 gap-4 w-full">
-            <h1 className=" w-full lg:w-72 lg:h-16 text-teal-500 font-semibold md:font-extrabold leading-8 text-xl md:text-2xl">
+            <h1 className=" w-full lg:w-80 lg:h-16 text-teal-500 text-xl md:text-xl">
               Move anywhere, anytime with TruckIt.
             </h1>
             <p className="text-black/80 leading-8 font-medium lg:mr-12 lg:h-18 text-sm lg:mb-10 md:text-lg lg:pr-2 text-justify">
@@ -28,8 +31,13 @@ const Home = () => {
               reliable movers to get you there stress-free.
             </p>
             <div className=" grid md:grid-cols-2 gap-4 my-2 w-full">
-              <MyDatePicker />
-              <MyDatePicker />
+              <Locationpicker
+              src={pickup}
+              />
+                  <Locationpicker
+              src={dropoff}
+              placeholder="Drop-off Location"
+              />
               <MyDatePicker />
               <MyTimePicker />
               
@@ -39,15 +47,16 @@ const Home = () => {
               buttonText="Continue"
               linkText="Login to see user activity"
               linkHref="/login"
+              widthClass = "w-36"
             />
           </div>
         </div>
 
-        <div className="flex-1">
+        <div className="flex-1 rounded-md">
           <Image
             src={heroimage}
             alt="Hero Image"
-            className="w-full h-full object-cover p-4 rounded border-white"
+            className="w-full h-full object-cover p-4 rounded-3xl border-white"
           />
         </div>
       </div>
@@ -108,18 +117,18 @@ const Home = () => {
           Looking to offer your services? Whether you're a truck driver or a
           mover, sign up now to connect with customers and grow your business.
         </span>
-        <ContinueWithLogin buttonText="Get Started" linkText="" linkHref="" />
+        <ContinueWithLogin buttonText="Get Started" linkText="" linkHref="" widthClass = "w-36" />
       </div>
 
     <div id="activity" className="flex flex-col lg:flex-row text-black justify-between w-full h-full p-4 ">
     <div className="relative w-full lg:w-1/2 h-72 sm:h-96 lg:h-[28rem]">
     <div className="absolute top-15 sm:top-16 lg:top-20 bg-teal-50 w-full h-2/3 lg:h-3/4 bottom-5 z-10 rounded-md "></div>
-    <div className="absolute bg-teal-500 w-10/12 max-w-5xl h-1/3 lg:h-2/3 left-1/2 transform -translate-x-1/2 z-0 bottom-2 rounded-md"></div>
+    <div className="absolute bg-teal-500 w-7/12 max-w-5xl h-1/3 lg:h-2/3 left-1/2 transform -translate-x-1/2 z-0 bottom-2 rounded-md"></div>
      <Image
             src={truck}
             alt="Hero Image"
             fill
-            className=" absolute w-full h-full object-cover p-4 bottom-3 rounded border-white z-10"
+            className=" absolute w-full max-h-full object-cover p-4 bottom-3 rounded border-white z-10"
           />
     </div>
 
@@ -135,7 +144,7 @@ const Home = () => {
               buttonText="Log in to your account"
               linkText="Create account"
               linkHref="/login"
-              widthClass = "w-40"
+              widthClass = "w-48"
             />
     </div>
     </div>

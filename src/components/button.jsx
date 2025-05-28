@@ -5,11 +5,11 @@ const ContinueWithLogin = ({
   buttonText = "Continue",
   linkText = "",
   linkHref = "#",
-  widthClass = "w-24" // Provide a default width
+  widthClass = "w-24" 
 }) => {
   return (
     <div className="flex items-center space-x-4">
-      <button className={`bg-teal-500 text-white border px-2 text-xs lg:text-sm border-teal-500 shadow-md ${widthClass} h-12 rounded`}>
+      <button className={`bg-teal-500 text-white border px-2 text-xs lg:text-sm border-teal-500 shadow-md ${widthClass} h-12 rounded cursor-pointer`}>
         {buttonText}
       </button>
 
