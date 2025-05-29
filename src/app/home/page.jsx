@@ -7,17 +7,19 @@ import serviceleft from "../../assets/images/services-left.png";
 import serviceright from "../../assets/images/services-right.png";
 import Navbar from "../../components/navbar";
 import MyDatePicker from "@/components/datepicker";
-import truck from "../../assets/images/truck.png"
+import truck from "../../assets/images/truck.png";
 import MyTimePicker from "@/components/timepicker";
 import Locationpicker from "@/components/locationpicker";
-import pickup from "../../assets/images/img-location.png"
-import dropoff from "../../assets/images/img-dropoff.png"
+import pickup from "../../assets/images/img-location.png";
+import dropoff from "../../assets/images/img-dropoff.png";
+import Carousel from "@/components/carousel";
 
 const Home = () => {
   return (
     <div id="main" className="min-h-screen bg-white w-full">
       <Navbar />
-      <div id="Hero-Section"
+      <div
+        id="Hero-Section"
         className="flex flex-col-reverse lg:flex-row p-4 my-10 "
       >
         <div className="flex-1  ">
@@ -31,23 +33,17 @@ const Home = () => {
               reliable movers to get you there stress-free.
             </p>
             <div className=" grid md:grid-cols-2 gap-4 my-2 w-full">
-              <Locationpicker
-              src={pickup}
-              />
-                  <Locationpicker
-              src={dropoff}
-              placeholder="Drop-off Location"
-              />
+              <Locationpicker src={pickup} />
+              <Locationpicker src={dropoff} placeholder="Drop-off Location" />
               <MyDatePicker />
               <MyTimePicker />
-              
             </div>
 
             <ContinueWithLogin
               buttonText="Continue"
               linkText="Login to see user activity"
               linkHref="/signin"
-              widthClass = "w-36"
+              widthClass="w-36"
             />
           </div>
         </div>
@@ -117,39 +113,56 @@ const Home = () => {
           Looking to offer your services? Whether you're a truck driver or a
           mover, sign up now to connect with customers and grow your business.
         </span>
-        <ContinueWithLogin buttonText="Get Started" linkText="" linkHref="" widthClass = "w-36" />
+        <ContinueWithLogin
+          buttonText="Get Started"
+          linkText=""
+          linkHref=""
+          widthClass="w-36"
+        />
       </div>
 
-    <div id="activity" className="flex flex-col lg:flex-row text-black justify-between w-full h-full p-4 ">
-    <div className="relative w-full lg:w-1/2 h-72 sm:h-96 lg:h-[28rem]">
-    <div className="absolute top-15 sm:top-16 lg:top-20 bg-teal-50 w-full h-2/3 lg:h-3/4 bottom-5 z-10 rounded-md "></div>
-    <div className="absolute bg-teal-500 w-7/12 max-w-5xl h-1/3 lg:h-2/3 left-1/2 transform -translate-x-1/2 z-0 bottom-2 rounded-md"></div>
-     <Image
+      <div id="activity"
+        className="flex flex-col lg:flex-row text-black justify-between w-full h-full p-4 "
+      >
+        <div className="relative w-full lg:w-1/2 h-72 sm:h-96 lg:h-[28rem]">
+          <div className="absolute top-15 sm:top-16 lg:top-20 bg-teal-50 w-full h-2/3 lg:h-3/4 bottom-5 z-10 rounded-md "></div>
+          <div className="absolute bg-teal-500 w-7/12 max-w-5xl h-1/3 lg:h-2/3 left-1/2 transform -translate-x-1/2 z-0 bottom-2 rounded-md"></div>
+          <Image
             src={truck}
             alt="Hero Image"
-        
             className=" absolute w-full max-h-full object-cover p-4 bottom-3 rounded border-white z-10"
           />
-    </div>
+        </div>
 
-    <div className="relative w-full lg:w-1/2  flex flex-col justify-end mb-8`">
-    <div className="h-1/2"></div>
-    <div id="login" className="p-4"> 
-        <h1 className=" text-lg md:text-xl font-bold lg:font-extrabold text-teal-500 pb-4 "
-        >Login to see your recent activity</h1>
-        <p className="text-sm text-black/80 leading-6 mb-4"
-        >Log in to access your account and stay updated on your recent activity, transactions, and progress, all in one place!</p>
+        <div className="relative w-full lg:w-1/2  flex flex-col justify-end mb-8`">
+          <div className="h-1/2"></div>
+          <div id="login" className="p-4">
+            <h1 className=" text-lg md:text-xl font-bold lg:font-extrabold text-teal-500 pb-4 ">
+              Login to see your recent activity
+            </h1>
+            <p className="text-sm text-black/80 leading-6 mb-4">
+              Log in to access your account and stay updated on your recent
+              activity, transactions, and progress, all in one place!
+            </p>
 
-        <ContinueWithLogin
+            <ContinueWithLogin
               buttonText="Log in to your account"
               linkText="Create account"
               linkHref="/createaccount"
-              widthClass = "w-48"
-              linkButton = "/signin"
+              widthClass="w-48"
+              linkButton="/signin"
             />
-    </div>
-    </div>
-    </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="carousel" className=" bg-black w-full h-[567px] mt-4 ">
+        <div>
+          <Carousel rating={4.0} />
+        </div>
+      </div>
+
+
     </div>
   );
 };
