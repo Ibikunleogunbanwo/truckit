@@ -3,6 +3,7 @@ import Image from "next/image";
 import logoimg from "../assets/images/image.png";
 import buttonimg from "../assets/images/buttonimg.png";
 import Logo from "../components/logo";
+import Link from 'next/link';
 
 const Navbar = () => {
   return (
@@ -33,12 +34,16 @@ const Navbar = () => {
 
         </div>
         <div id="button" className="flex-1 flex justify-end">
-          <button className="bg-white w-22 lg:w-28  h-8 lg:h-11 text-black flex justify-center items-center gap-2 text-sm rounded shadow-md p-1 lg:p-4 hover:bg-teal-500 hover:text-white ">
+        <Link href="/signin">
+          <button 
+          type="button"
+          className="bg-white w-22 lg:w-28  h-8 lg:h-11 text-black flex justify-center items-center gap-2 text-sm rounded shadow-md p-1 lg:p-4 hover:bg-teal-500 hover:text-white ">
             Sign in
             <span>
               <Image src={buttonimg} width={15} height={15} alt="button logo" />
             </span>
           </button>
+          </Link>
         </div>
       </div>
     </div>

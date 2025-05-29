@@ -46,7 +46,7 @@ const Home = () => {
             <ContinueWithLogin
               buttonText="Continue"
               linkText="Login to see user activity"
-              linkHref="/login"
+              linkHref="/signin"
               widthClass = "w-36"
             />
           </div>
@@ -127,7 +127,7 @@ const Home = () => {
      <Image
             src={truck}
             alt="Hero Image"
-            fill
+        
             className=" absolute w-full max-h-full object-cover p-4 bottom-3 rounded border-white z-10"
           />
     </div>
@@ -143,8 +143,9 @@ const Home = () => {
         <ContinueWithLogin
               buttonText="Log in to your account"
               linkText="Create account"
-              linkHref="/login"
+              linkHref="/createaccount"
               widthClass = "w-48"
+              linkButton = "/signin"
             />
     </div>
     </div>

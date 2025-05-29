@@ -25,7 +25,7 @@ const Signin = () => {
             width={50}
             className="bg-teal-500"
           />
-          <h1 className="text-lg text-teal-500 font-bold mt-2 mb-12">
+          <h1 className="text-lg text-teal-500 font-bold mt-2 mb-12 leading-relaxed ">
             Truckit
           </h1>
         </div>
@@ -74,7 +74,7 @@ const Signin = () => {
             <ContinueWithLogin
               buttonText="Sign in"
               linkText="Sign up"
-              linkHref="/login"
+              linkHref="/createaccount"
               widthClass="w-28"
             />
           </div>
