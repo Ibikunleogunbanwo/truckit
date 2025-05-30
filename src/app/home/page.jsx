@@ -13,6 +13,8 @@ import Locationpicker from "@/components/locationpicker";
 import pickup from "../../assets/images/img-location.png";
 import dropoff from "../../assets/images/img-dropoff.png";
 import Carousel from "@/components/carousel";
+import Footer from "@/components/footer";
+
 
 const Home = () => {
   return (
@@ -121,7 +123,8 @@ const Home = () => {
         />
       </div>
 
-      <div id="activity"
+      <div
+        id="activity"
         className="flex flex-col lg:flex-row text-black justify-between w-full h-full p-4 "
       >
         <div className="relative w-full lg:w-1/2 h-72 sm:h-96 lg:h-[28rem]">
@@ -157,12 +160,10 @@ const Home = () => {
       </div>
 
       <div id="carousel" className=" bg-black w-full h-[567px] mt-4 ">
-        <div>
-          <Carousel rating={4.0} />
-        </div>
+        <Carousel rating={4.0} />
       </div>
 
-
+      <Footer />
     </div>
   );
 };
