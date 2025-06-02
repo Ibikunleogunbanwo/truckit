@@ -1,0 +1,194 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+
+const Moversassistance = () => {
+  const [needDriver, setNeedDriver] = useState(true);
+  const [needMover, setNeedMover] = useState(true);
+  const [needUnload, setNeedUnload] = useState(true);
+
+  const baseButtonClasses =
+    "w-1/2 p-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-white";
+
+  useEffect(() => {
+    console.log(needDriver);
+    console.log(needMover);
+    console.log(needUnload);
+  }, [needDriver, needMover, needUnload]);
+
+  return (
+    <div>
+      <p className="text-teal-500 font-bold mt-10 mb-4">
+        3. Movers and assistance
+      </p>
+
+      <div className="flex flex-col md:flex-row md:justify-between items-start text-sm gap-6 md:px-8 mb-4">
+        {/* Driver */}
+        <div className="flex flex-col md:w-1/4 ">
+          <div className="min-h-[40px]">
+            <label htmlFor="needDriver" className="font-medium">
+              Do you need a driver?
+            </label>
+          </div>
+          <div className="flex border-2 gap-1 border-gray-300 rounded-md p-1 w-36">
+            <button
+              onClick={() => setNeedDriver(true)}
+              className={`${baseButtonClasses} ${
+                needDriver
+                  ? "bg-teal-500 text-white rounded-md"
+                  : "bg-white rounded-md"
+              }`}
+            >
+              Yes
+            </button>
+            <button
+              onClick={() => setNeedDriver(false)}
+              className={`${baseButtonClasses} ${
+                needDriver === false
+                  ? "bg-teal-500 text-white rounded-md"
+                  : "bg-white"
+              }`}
+            >
+              No
+            </button>
+          </div>
+        </div>
+
+        {/* Mover Load */}
+        <div className="flex flex-col md:w-1/4">
+          <div className="min-h-[40px]">
+            <label htmlFor="needMover" className="font-medium">
+              Do you need movers to help you load?
+            </label>
+          </div>
+          <div className="flex border-2 border-gray-300 rounded-md p-1 w-36">
+            <button
+              onClick={() => setNeedMover(true)}
+              className={`${baseButtonClasses} ${
+                needMover
+                  ? "bg-teal-500 text-white rounded-md"
+                  : "bg-white rounded-md"
+              }`}
+            >
+              Yes
+            </button>
+            <button
+              onClick={() => setNeedMover(false)}
+              className={`${baseButtonClasses} ${
+                needMover === false
+                  ? "bg-teal-500 text-white rounded-md"
+                  : "bg-white"
+              }`}
+            >
+              No
+            </button>
+          </div>
+        </div>
+
+        {/* Mover Unload */}
+        <div className="flex flex-col md:w-1/4">
+          <div className="min-h-[40px]">
+            <label htmlFor="needUnload" className="font-medium">
+              Do you need movers to help you unload?
+            </label>
+          </div>
+          <div className="flex border-2 border-gray-300 rounded-md p-1 w-36">
+            <button
+              onClick={() => setNeedUnload(true)}
+              className={`${baseButtonClasses} ${
+                needUnload
+                  ? "bg-teal-500 text-white rounded-md"
+                  : "bg-white rounded-md"
+              }`}
+            >
+              Yes
+            </button>
+            <button
+              onClick={() => setNeedUnload(false)}
+              className={`${baseButtonClasses} ${
+                needUnload === false
+                  ? "bg-teal-500 text-white rounded-md"
+                  : "bg-white"
+              }`}
+            >
+              No
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col lg:flex-row mb-4 mt-8 gap-2">
+        {/* Vehicle & Movers Section */}
+        <div className="flex flex-col lg:flex-row gap-2 w-full lg:w-1/2 rounded-md">
+          {/* Vehicle Type */}
+          <div className="rounded-md w-full md:flex-1">
+            <div className="flex justify-between items-center">
+              <label htmlFor="vehicle-type" className=" text-sm font-medium">
+                Truck Type
+              </label>
+              <Link href="/help/choose-truck">
+                <span className="text-[10px] text-teal-500 cursor-pointer underline">
+                  Need help choosing?
+                </span>
+              </Link>
+            </div>
+            <select
+              id="vehicle-type"
+              name="vehicle-type"
+              className="w-full p-3 h-12 text-sm rounded-md border border-gray-300 outline-none"
+            >
+              <option value="cargo-van">Cargo Van</option>
+              <option value="pickup-truck">Pickup Truck</option>
+              <option value="sprinter-van">Sprinter Van</option>
+              <option value="box-truck-12ft">Box Truck (12 ft)</option>
+              <option value="box-truck-16ft">Box Truck (16 ft)</option>
+              <option value="box-truck-24ft">Box Truck (24 ft)</option>
+              <option value="box-truck-26ft">Box Truck (26 ft)</option>
+              <option value="straight-truck">Straight Truck</option>
+              <option value="moving-van">Moving Van</option>
+              <option value="trailer">Utility Trailer</option>
+              <option value="semi-truck">
+                Semi-Truck (for long-distance or bulk)
+              </option>
+            </select>
+          </div>
+
+          {/* Number of Movers */}
+          <div className="rounded-md w-full mt-1 md:flex-1">
+            <label htmlFor="Noofmovers" className="block text-sm font-medium">
+              Number of movers needed:
+            </label>
+            <select
+              id="Noofmovers"
+              name="Noofmovers"
+              className="w-full p-3 h-12 text-sm rounded-md border border-gray-300 outline-none"
+            >
+              {[1, 2, 3, 4, 5].map((val) => (
+                <option key={val} value={val}>
+                  {val}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Equipment Input */}
+        <div className="lg:w-1/2 mt-1 rounded-md ">
+          <label htmlFor="equipment-type" className="block text-sm font-medium">
+            Equipment Required:
+          </label>
+          <input
+            id="equipment-type"
+            type="text"
+            className="border border-gray-300 w-full rounded-md p-3 text-sm"
+            placeholder="e.g. straps, dollies"
+          />
+        </div>
+      </div>
+          
+
+    </div>
+  );
+};
+
+export default Moversassistance;
