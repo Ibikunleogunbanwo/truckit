@@ -2,11 +2,11 @@
 
 import React from "react";
 import Image from "next/image";
-import logowhite from "../../assets/images/logo-white.png";
+import logowhite from "../../../assets/images/logo-white.png";
 import Logo from "@/components/logo";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import ContinueWithLogin from "@/components/button";
+import ContinueWithLogin from "@/components/landingpage/button";
 
 const Signup = () => {
   const [showPassword1, setShowPassword1] = useState(false);
@@ -135,7 +135,7 @@ const Signup = () => {
           <ContinueWithLogin
             buttonText="Create account"
             linkText="Sign in"
-            linkHref="/signin"
+            linkHref="/login"
             widthClass="w-36"
           />
         </div>

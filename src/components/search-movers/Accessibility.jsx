@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import plusimg from "../assets/images/Plus.png";
+import plusimg from "../../assets/images/Plus.png";
 
 const BUILDING_DATA = {
   Apartment: ["Elevator", "Stairs", "Ramp"],

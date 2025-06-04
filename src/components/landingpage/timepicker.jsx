@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import TimeIcon from "../assets/images/img-time.png";
+import TimeIcon from "../../assets/images/img-time.png";
 
 
 const generateTimeSlots = () => {

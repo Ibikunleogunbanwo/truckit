@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import plusimg from "../assets/images/Plus.png";
+import plusimg from "../../assets/images/Plus.png";
 
 export default function CategoryDropdown() {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -224,6 +224,7 @@ export default function CategoryDropdown() {
           </div>
         ))}
       </div>
+
     </div>
   );
 }

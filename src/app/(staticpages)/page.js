@@ -1,25 +1,21 @@
 import React from "react";
 import Image from "next/image";
 import heroimage from "../../assets/images/hero-image.png";
-import Link from "next/link";
-import ContinueWithLogin from "@/components/button";
+import ContinueWithLogin from "@/components/landingpage/button";
 import serviceleft from "../../assets/images/services-left.png";
 import serviceright from "../../assets/images/services-right.png";
-import Navbar from "../../components/navbar";
-import MyDatePicker from "@/components/datepicker";
+import MyDatePicker from "@/components/landingpage/datepicker";
 import truck from "../../assets/images/truck.png";
-import MyTimePicker from "@/components/timepicker";
-import Locationpicker from "@/components/locationpicker";
+import MyTimePicker from "@/components/landingpage/timepicker";
+import Locationpicker from "@/components/landingpage/locationpicker";
 import pickup from "../../assets/images/img-location.png";
 import dropoff from "../../assets/images/img-dropoff.png";
-import Carousel from "@/components/carousel";
-import Footer from "@/components/footer";
+import Carousel from "@/components/landingpage/carousel";
 
 
-const Home = () => {
+const Page = () => {
   return (
     <div id="main" className="min-h-screen bg-white w-full">
-      <Navbar />
       <div
         id="Hero-Section"
         className="flex flex-col-reverse lg:flex-row p-4 my-10 "
@@ -44,7 +40,7 @@ const Home = () => {
             <ContinueWithLogin
               buttonText="Continue"
               linkText="Login to see user activity"
-              linkHref="/signin"
+              linkHref="/login"
               widthClass="w-36"
             />
           </div>
@@ -151,9 +147,9 @@ const Home = () => {
             <ContinueWithLogin
               buttonText="Log in to your account"
               linkText="Create account"
-              linkHref="/createaccount"
+              linkHref="/register"
               widthClass="w-48"
-              linkButton="/signin"
+              linkButton="/login"
             />
           </div>
         </div>
@@ -162,10 +158,8 @@ const Home = () => {
       <div id="carousel" className=" bg-black w-full h-[567px] mt-4 ">
         <Carousel rating={4.0} />
       </div>
-
-      <Footer />
     </div>
   );
 };
 
-export default Home;
+export default Page;

@@ -34,7 +34,7 @@ const Navbar = () => {
 
         </div>
         <div id="button" className="flex-1 flex justify-end">
-        <Link href="/signin">
+        <Link href="/login">
           <button 
           type="button"
           className="bg-white w-22 lg:w-28  h-8 lg:h-11 text-black flex justify-center items-center gap-2 text-sm rounded shadow-md p-1 lg:p-4 hover:bg-teal-500 hover:text-white ">

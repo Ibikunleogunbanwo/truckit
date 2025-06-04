@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Image from "next/image";
-import CalendarIcon from "../assets/images/img-calender.png";
+import CalendarIcon from "../../assets/images/img-calender.png";
 
 export default function MyDatePicker() {
   const [startDate, setStartDate] = useState(null);

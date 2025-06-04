@@ -3,8 +3,8 @@
 import Logo from "@/components/logo";
 import React from "react";
 import Image from "next/image";
-import logowhite from "../../assets/images/logo-white.png";
-import ContinueWithLogin from "@/components/button";
+import logowhite from "../../../assets/images/logo-white.png";
+import ContinueWithLogin from "@/components/landingpage/button";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 
@@ -74,7 +74,7 @@ const Signin = () => {
             <ContinueWithLogin
               buttonText="Sign in"
               linkText="Sign up"
-              linkHref="/createaccount"
+              linkHref="/register"
               widthClass="w-28"
             />
           </div>

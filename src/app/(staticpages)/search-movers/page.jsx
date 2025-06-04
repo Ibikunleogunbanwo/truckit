@@ -1,19 +1,15 @@
-import Navbar from "@/components/navbar";
 import React from "react";
 import Image from "next/image";
-import Arrowicon from "../../assets/images/Arrow - Left.png";
-import CategoryDropdown from "@/components/selectservices";
-import Accessibility from "@/components/Accessibility";
-import Moversassistance from "@/components/moversassistance";
-import Confirmation from "@/components/confirmation";
-import Footer from "@/components/footer";
-import Contactinfo from "@/components/contactinfo";
+import Arrowicon from "../../../assets/images/Arrow - Left.png";
+import CategoryDropdown from "@/components/search-movers/selectservices";
+import Accessibility from "@/components/search-movers/Accessibility";
+import Moversassistance from "@/components/search-movers/moversassistance";
+import Confirmation from "@/components/search-movers/confirmation";
+import Contactinfo from "@/components/search-movers/contactinfo";
 
 const Searchmovers = () => {
   return (
     <div id="main" className="min-h-screen bg-white w-full">
-      
-      <Navbar />
       
       <div className="grid p-8">
         <div>
@@ -57,8 +53,6 @@ const Searchmovers = () => {
 
         <Confirmation />
       </div>
-  
-    <Footer />
     </div>
   );
 };

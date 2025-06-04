@@ -2,7 +2,7 @@
 import React from 'react'
 import { useState } from "react";
 import Link from 'next/link';
-import ContinueWithLogin from './button';
+import ContinueWithLogin from '../landingpage/button';
 
 
 const Confirmation = () => {
