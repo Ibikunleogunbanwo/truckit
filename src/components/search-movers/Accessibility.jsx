@@ -13,11 +13,10 @@ const BUILDING_DATA = {
   Others: ["Other Access Methods"],
 };
 
-const Accessibility = () => {
-  const [buildingType, setBuildingType] = useState("");
-  const [accessType, setAccessType] = useState("");
-  const [instruction, setInstruction] = useState("");
-  const [entries, setEntries] = useState([]);
+const Accessibility = ({ entries, onEntriesChange}) => {
+  const [buildingType, setBuildingType] = useState(entries?.buildingType ?? "");
+  const [accessType, setAccessType] = useState(entries?.accessType ?? "");
+  const [instruction, setInstruction] = useState(entries?.instruction ?? 'No Instructions');
 
   const handleBuildingChange = (e) => {
     setBuildingType(e.target.value);
@@ -32,23 +31,21 @@ const Accessibility = () => {
   const handleAddEntry = () => {
     if (!buildingType || !accessType) return;
 
-    if (entries.length >= 1) return; // Only allow one entry
+    if (entries) return; // Only allow one entry
 
-    setEntries([
-      {
+    onEntriesChange({
         buildingType,
         accessType,
         instruction: instruction.trim(),
         count: 1,
-      },
-    ]);
+      })
 
     setAccessType("");
     setInstruction("");
   };
 
-  const handleDelete = (indexToDelete) => {
-    setEntries((prev) => prev.filter((_, index) => index !== indexToDelete));
+  const handleDelete = () => {
+    onEntriesChange(null)
   };
 
   return (
@@ -113,12 +110,12 @@ const Accessibility = () => {
 
           <button
             onClick={handleAddEntry}
-            disabled={entries.length > 0}
+            disabled={Boolean(entries)}
             className={`text-sm mt-2 px-4 py-2 ${
-              entries.length > 0
+              Boolean(entries)
                 ? "bg-gray-200 cursor-not-allowed"
                 : "bg-[#00000005] hover:border-teal-500"
-            } text-xs md:text-sm relative mt-2 px-4 py-2 bg-[#00000005] border-[0000001A] border-1 shadow-lg hover:border-teal-500 text-black  h-12 rounded md:w-36 flex items-center justify-center gap-2`}
+            } text-xs md:text-sm relative mt-2 px-4 py-2 bg-[#00000005] border-[0000001A] border-1 shadow-lg hover:border-teal-500 text-black  h-12 rounded md:w-36 flex items-center justify-center gap-2 disabled:opacity-50`}
           >
             <Image src={plusimg} alt="Add" />
             Submit
@@ -146,37 +143,34 @@ const Accessibility = () => {
       </div>
 
       {/* Display Entry */}
-      {entries.length > 0 && (
-  <div className="w-full md:w-3/4 mt-6">
-    <ul className="space-y-2">
-      {entries.map((entry, index) => (
-        <li
-          key={index}
-          className="border p-2 rounded flex justify-between items-start gap-4 text-sm"
-        >
-          <div>
-            <strong>
-              {entry.buildingType} → {entry.accessType}
-            </strong>
-            <div className="text-gray-600 mt-1">
-              {entry.instruction || "No instructions"}
-            </div>
-          </div>
+      {entries && (
+        <div className="w-full md:w-3/4 mt-6">
+          <ul className="space-y-2">
+            <li
+                className="border p-2 rounded flex justify-between items-start gap-4 text-sm"
+              >
+                <div>
+                  <strong>
+                    {entries.buildingType} → {entries.accessType}
+                  </strong>
+                  <div className="text-gray-600 mt-1">
+                    {entries.instruction || "No instructions"}
+                  </div>
+                </div>
 
-          <button
-            onClick={() =>
-              window.confirm("Are you sure you want to delete this entry?") &&
-              handleDelete(index)
-            }
-            className="text-red-500 text-xs hover:underline"
-          >
-            Delete
-          </button>
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
+                <button
+                  onClick={() =>
+                    window.confirm("Are you sure you want to delete this entry?") &&
+                    handleDelete()
+                  }
+                  className="text-red-500 text-xs hover:underline"
+                >
+                  Delete
+                </button>
+              </li>
+          </ul>
+        </div>
+      )}
 
 
     </div>

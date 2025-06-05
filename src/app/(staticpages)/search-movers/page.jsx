@@ -1,4 +1,5 @@
-import React from "react";
+"use client"
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Arrowicon from "../../../assets/images/Arrow - Left.png";
 import CategoryDropdown from "@/components/search-movers/selectservices";
@@ -8,9 +9,17 @@ import Confirmation from "@/components/search-movers/confirmation";
 import Contactinfo from "@/components/search-movers/contactinfo";
 
 const Searchmovers = () => {
+  const [accessibilityData, setAccessibilityData] = useState(null);
+
+  const [selectedItems, setSelectedItems] = useState([]);
+
+  useEffect(() => {
+      console.log("accessibility data: ", accessibilityData)
+  }, [accessibilityData])
+
+
   return (
     <div id="main" className="min-h-screen bg-white w-full">
-      
       <div className="grid p-8">
         <div>
           <Image src={Arrowicon} alt="Arrow icon" className="mb-2" />
@@ -32,24 +41,27 @@ const Searchmovers = () => {
         </div>
         <p className="text-teal-500 font-bold mt-18">1. Items to be moved</p>
         <div className="mb-4">
-          <CategoryDropdown />
+         <CategoryDropdown onItemsChange={setSelectedItems} />
           <hr className="mt-2 border-gray-300" />
         </div>
 
         <div className="mb-4">
-          <Accessibility />
+          <Accessibility
+            entries={accessibilityData}
+            onEntriesChange={(entries) => setAccessibilityData(entries)}
+          />
           <hr className="mt-4 border-gray-300" />
         </div>
 
         <div>
-      <Moversassistance />
-      <hr className="mt-2 border-gray-300" />
+          <Moversassistance />
+          <hr className="mt-2 border-gray-300" />
         </div>
 
         <div>
-      <Contactinfo />
-      <hr className="mt-2 border-gray-300" />
-    </div>
+          <Contactinfo />
+          <hr className="mt-2 border-gray-300" />
+        </div>
 
         <Confirmation />
       </div>

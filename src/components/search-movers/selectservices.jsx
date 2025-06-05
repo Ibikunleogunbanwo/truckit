@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import plusimg from "../../assets/images/Plus.png";
 
-export default function CategoryDropdown() {
+export default function CategoryDropdown({ onItemsChange }) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
   const [instruction, setInstruction] = useState("");
@@ -39,6 +39,13 @@ export default function CategoryDropdown() {
     Others: ["Others"],
   };
 
+
+  const updateItems = (newItems) => {
+    setItems(newItems);
+    onItemsChange?.(newItems); 
+  };
+
+
   const handleCategoryChange = (e) => {
     setSelectedCategory(e.target.value);
     setSelectedSubcategory("");
@@ -49,36 +56,43 @@ export default function CategoryDropdown() {
     setSelectedSubcategory(e.target.value);
   };
 
-  const handleAddItem = () => {
+  const handleAddItem = (e) => {
+    e.preventDefault(); 
+    console.log("Adding item...");
+    
     if (!selectedCategory || !selectedSubcategory) return;
-
-    setItems((prevItems) => {
-      const index = prevItems.findIndex(
+  
+    updateItems((prev) => {
+      const trimmedInstruction = instruction.trim();
+  
+      const existingIndex = prev.findIndex(
         (item) =>
           item.category === selectedCategory &&
-          item.subcategory === selectedSubcategory
+          item.subcategory === selectedSubcategory &&
+          item.instruction === trimmedInstruction
       );
-
-      if (index !== -1) {
-        const updatedItems = [...prevItems];
-        updatedItems[index].count += 1;
-        return updatedItems;
+  
+      if (existingIndex !== -1) {
+        const updated = [...prev];
+        updated[existingIndex].count += 1;
+        return updated;
       }
-
+  
       return [
-        ...prevItems,
+        ...prev,
         {
           category: selectedCategory,
           subcategory: selectedSubcategory,
-          instruction: instruction.trim(),
+          instruction: trimmedInstruction,
           count: 1,
         },
       ];
     });
-
+  
     setSelectedSubcategory("");
     setInstruction("");
   };
+
 
   const handleDeleteItem = (category, subcategory, instruction) => {
     setItems((prevItems) =>
@@ -157,6 +171,7 @@ export default function CategoryDropdown() {
           )}
 
           <button
+          type="button"
             onClick={handleAddItem}
             className="text-xs md:text-sm relative mt-2 px-4 py-2 bg-[#00000005] border-[0000001A] border-1 shadow-lg hover:border-teal-500 text-black h-12 rounded w-32 md:w-36 flex items-center justify-center gap-2"
           >
