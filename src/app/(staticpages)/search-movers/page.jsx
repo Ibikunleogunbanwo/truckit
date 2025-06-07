@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Arrowicon from "../../../assets/images/Arrow - Left.png";
-import CategoryDropdown from "@/components/search-movers/selectservices";
+import SelectServices from "@/components/search-movers/selectservices";
 import Accessibility from "@/components/search-movers/Accessibility";
 import Moversassistance from "@/components/search-movers/moversassistance";
 import Confirmation from "@/components/search-movers/confirmation";
@@ -10,12 +10,12 @@ import Contactinfo from "@/components/search-movers/contactinfo";
 
 const Searchmovers = () => {
   const [accessibilityData, setAccessibilityData] = useState(null);
-
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
       console.log("accessibility data: ", accessibilityData)
   }, [accessibilityData])
+
 
 
   return (
@@ -41,7 +41,7 @@ const Searchmovers = () => {
         </div>
         <p className="text-teal-500 font-bold mt-18">1. Items to be moved</p>
         <div className="mb-4">
-         <CategoryDropdown onItemsChange={setSelectedItems} />
+         <SelectServices items={items} onItemsChange={setItems} />
           <hr className="mt-2 border-gray-300" />
         </div>
 

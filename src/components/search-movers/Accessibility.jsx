@@ -13,10 +13,12 @@ const BUILDING_DATA = {
   Others: ["Other Access Methods"],
 };
 
-const Accessibility = ({ entries, onEntriesChange}) => {
+const Accessibility = ({ entries, onEntriesChange }) => {
   const [buildingType, setBuildingType] = useState(entries?.buildingType ?? "");
   const [accessType, setAccessType] = useState(entries?.accessType ?? "");
-  const [instruction, setInstruction] = useState(entries?.instruction ?? 'No Instructions');
+  const [instruction, setInstruction] = useState(
+    entries?.instruction ?? "No Instructions"
+  );
 
   const handleBuildingChange = (e) => {
     setBuildingType(e.target.value);
@@ -28,24 +30,25 @@ const Accessibility = ({ entries, onEntriesChange}) => {
     setAccessType(e.target.value);
   };
 
-  const handleAddEntry = () => {
+  //this happens when the submit button is pressed//
+  const handleSubmit = (e) => {
+    e.preventDefault();
     if (!buildingType || !accessType) return;
 
-    if (entries) return; // Only allow one entry
+    if (entries) return;
 
     onEntriesChange({
-        buildingType,
-        accessType,
-        instruction: instruction.trim(),
-        count: 1,
-      })
+      buildingType,
+      accessType,
+      instruction: instruction.trim(),
+    });
 
     setAccessType("");
     setInstruction("");
   };
 
   const handleDelete = () => {
-    onEntriesChange(null)
+    onEntriesChange(null);
   };
 
   return (
@@ -108,10 +111,30 @@ const Accessibility = ({ entries, onEntriesChange}) => {
             </p>
           )}
 
+          <div className="md:hidden w-full md:w-1/2 mb-2 flex flex-col justify-start">
+            <label
+              htmlFor="instruction"
+              className="text-xs md:text-sm mb-2 font-medium"
+            >
+              Special Entry Handling Instructions
+            </label>
+            <textarea
+              id="instruction"
+              name="instruction"
+              rows="1"
+              className="w-full border rounded p-2 resize-none h-24 sm:h-28 md:h-12"
+              placeholder="If Others, list access method here."
+              value={instruction}
+              onChange={(e) => setInstruction(e.target.value)}
+            />
+          </div>
+
           <button
-            onClick={handleAddEntry}
+            onClick={handleSubmit}
+            //disable if entries is true//
             disabled={Boolean(entries)}
             className={`text-sm mt-2 px-4 py-2 ${
+              //render if entries is true//
               Boolean(entries)
                 ? "bg-gray-200 cursor-not-allowed"
                 : "bg-[#00000005] hover:border-teal-500"
@@ -123,7 +146,7 @@ const Accessibility = ({ entries, onEntriesChange}) => {
         </div>
 
         {/* Right: Instruction */}
-        <div className="w-full md:w-1/2 mb-2 flex flex-col justify-start">
+        <div className="hidden w-full md:w-1/2 mb-2 md:flex flex-col justify-start">
           <label
             htmlFor="instruction"
             className="text-xs md:text-sm mb-2 font-medium"
@@ -146,33 +169,31 @@ const Accessibility = ({ entries, onEntriesChange}) => {
       {entries && (
         <div className="w-full md:w-3/4 mt-6">
           <ul className="space-y-2">
-            <li
-                className="border p-2 rounded flex justify-between items-start gap-4 text-sm"
-              >
-                <div>
-                  <strong>
-                    {entries.buildingType} → {entries.accessType}
-                  </strong>
-                  <div className="text-gray-600 mt-1">
-                    {entries.instruction || "No instructions"}
-                  </div>
+            <li className="border p-2 rounded flex justify-between items-start gap-4 text-sm">
+              <div>
+                <strong>
+                  {entries.buildingType} → {entries.accessType}
+                </strong>
+                <div className="text-gray-600 mt-1">
+                  {entries.instruction || "No instructions"}
                 </div>
+              </div>
 
-                <button
-                  onClick={() =>
-                    window.confirm("Are you sure you want to delete this entry?") &&
-                    handleDelete()
-                  }
-                  className="text-red-500 text-xs hover:underline"
-                >
-                  Delete
-                </button>
-              </li>
+              <button
+                onClick={() =>
+                  window.confirm(
+                    "Are you sure you want to delete this entry?"
+                  ) && handleDelete()
+                }
+                className="text-red-500 text-xs hover:underline"
+              >
+                Delete
+              </button>
+              
+            </li>
           </ul>
         </div>
       )}
-
-
     </div>
   );
 };

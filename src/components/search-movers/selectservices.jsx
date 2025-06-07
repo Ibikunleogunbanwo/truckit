@@ -4,47 +4,39 @@ import { useState } from "react";
 import Image from "next/image";
 import plusimg from "../../assets/images/Plus.png";
 
-export default function CategoryDropdown({ onItemsChange }) {
+const categories = {
+  Furniture: [
+    "Sofas & Couches",
+    "Beds & Mattresses",
+    "Tables & Chairs",
+    "Cabinets & Dressers",
+    "Desks & Office Furniture",
+  ],
+  Appliances: [
+    "Refrigerators",
+    "Washing Machines",
+    "Dishwashers",
+    "Ovens & Microwaves",
+    "Air Conditioners",
+  ],
+  Electronics: [
+    "Televisions",
+    "Computers & Monitors",
+    "Gaming Consoles",
+    "Audio Equipment",
+    "Printers & Scanners",
+  ],
+  Boxes: ["Labeled Boxes", "Books", "Clothes", "Kitchenware", "Toys"],
+  Fragile: ["Glassware", "Mirrors", "Paintings", "Musical Instruments"],
+  Outdoor: ["Garden Tools", "Bicycles", "Lawn Mowers", "Patio Furniture"],
+  Specialty: ["Safes", "Pianos", "Aquariums", "Antiques", "Pool Tables"],
+  Others: ["Others"],
+};
+
+export default function SelectServices({ items, onItemsChange }) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
   const [instruction, setInstruction] = useState("");
-  const [items, setItems] = useState([]);
-
-  const categories = {
-    Furniture: [
-      "Sofas & Couches",
-      "Beds & Mattresses",
-      "Tables & Chairs",
-      "Cabinets & Dressers",
-      "Desks & Office Furniture",
-    ],
-    Appliances: [
-      "Refrigerators",
-      "Washing Machines",
-      "Dishwashers",
-      "Ovens & Microwaves",
-      "Air Conditioners",
-    ],
-    Electronics: [
-      "Televisions",
-      "Computers & Monitors",
-      "Gaming Consoles",
-      "Audio Equipment",
-      "Printers & Scanners",
-    ],
-    Boxes: ["Labeled Boxes", "Books", "Clothes", "Kitchenware", "Toys"],
-    Fragile: ["Glassware", "Mirrors", "Paintings", "Musical Instruments"],
-    Outdoor: ["Garden Tools", "Bicycles", "Lawn Mowers", "Patio Furniture"],
-    Specialty: ["Safes", "Pianos", "Aquariums", "Antiques", "Pool Tables"],
-    Others: ["Others"],
-  };
-
-
-  const updateItems = (newItems) => {
-    setItems(newItems);
-    onItemsChange?.(newItems); 
-  };
-
 
   const handleCategoryChange = (e) => {
     setSelectedCategory(e.target.value);
@@ -56,30 +48,35 @@ export default function CategoryDropdown({ onItemsChange }) {
     setSelectedSubcategory(e.target.value);
   };
 
+  const handleInstructionChange = (e) => {
+    setInstruction(e.target.value);
+  };
+
+
+
+  
   const handleAddItem = (e) => {
-    e.preventDefault(); 
-    console.log("Adding item...");
-    
+    e.preventDefault();
+
     if (!selectedCategory || !selectedSubcategory) return;
-  
-    updateItems((prev) => {
-      const trimmedInstruction = instruction.trim();
-  
-      const existingIndex = prev.findIndex(
-        (item) =>
-          item.category === selectedCategory &&
-          item.subcategory === selectedSubcategory &&
-          item.instruction === trimmedInstruction
-      );
-  
-      if (existingIndex !== -1) {
-        const updated = [...prev];
-        updated[existingIndex].count += 1;
-        return updated;
-      }
-  
-      return [
-        ...prev,
+
+    const trimmedInstruction = instruction.trim();
+
+    const existingIndex = items.findIndex(
+      (item) =>
+        item.category === selectedCategory &&
+        item.subcategory === selectedSubcategory &&
+        item.instruction === trimmedInstruction
+    );
+
+    let updatedItems = null;
+
+    if (existingIndex !== -1) {
+      updatedItems = [...items];
+      updatedItems[existingIndex].count += 1;
+    } else {
+      updatedItems = [
+        ...items,
         {
           category: selectedCategory,
           subcategory: selectedSubcategory,
@@ -87,12 +84,15 @@ export default function CategoryDropdown({ onItemsChange }) {
           count: 1,
         },
       ];
-    });
-  
+    }
+
+    // if onItemsChange is undefined/null, the onItemsChange function
+    // will not be called
+    onItemsChange && onItemsChange(updatedItems);
+
     setSelectedSubcategory("");
     setInstruction("");
   };
-
 
   const handleDeleteItem = (category, subcategory, instruction) => {
     setItems((prevItems) =>
@@ -170,8 +170,26 @@ export default function CategoryDropdown({ onItemsChange }) {
             </p>
           )}
 
+          <div className=" md:hidden w-full md:w-1/2 mb-2 flex flex-col justify-start">
+            <label
+              htmlFor="instruction"
+              className="text-xs md:text-sm mb-2 font-medium"
+            >
+              Special handling instructions/Description
+            </label>
+            <textarea
+              id="instruction"
+              name="instruction"
+              rows="1"
+              className="w-full border rounded p-2 resize-none h-24 sm:h-28 md:h-12"
+              placeholder=" If Others List items here."
+              value={instruction}
+              onChange={handleInstructionChange}
+            />
+          </div>
+
           <button
-          type="button"
+            type="button"
             onClick={handleAddItem}
             className="text-xs md:text-sm relative mt-2 px-4 py-2 bg-[#00000005] border-[0000001A] border-1 shadow-lg hover:border-teal-500 text-black h-12 rounded w-32 md:w-36 flex items-center justify-center gap-2"
           >
@@ -181,7 +199,7 @@ export default function CategoryDropdown({ onItemsChange }) {
         </div>
 
         {/* Right column */}
-        <div className="w-full md:w-1/2 mb-2 flex flex-col justify-start">
+        <div className="hidden md:flex w-full md:w-1/2 mb-2 flex-col justify-start">
           <label
             htmlFor="instruction"
             className="text-xs md:text-sm mb-2 font-medium"
@@ -195,7 +213,7 @@ export default function CategoryDropdown({ onItemsChange }) {
             className="w-full border rounded p-2 resize-none h-24 sm:h-28 md:h-12"
             placeholder=" If Others List items here."
             value={instruction}
-            onChange={(e) => setInstruction(e.target.value)}
+            onChange={handleInstructionChange}
           />
         </div>
       </div>
@@ -226,8 +244,14 @@ export default function CategoryDropdown({ onItemsChange }) {
                   </div>
                   <button
                     onClick={() =>
-                      window.confirm("Are you sure you want to delete this item?") &&
-                      handleDeleteItem(item.category, item.subcategory, item.instruction)
+                      window.confirm(
+                        "Are you sure you want to delete this item?"
+                      ) &&
+                      handleDeleteItem(
+                        item.category,
+                        item.subcategory,
+                        item.instruction
+                      )
                     }
                     className="text-red-500 text-xs hover:underline"
                   >
@@ -239,7 +263,6 @@ export default function CategoryDropdown({ onItemsChange }) {
           </div>
         ))}
       </div>
-
     </div>
   );
 }
