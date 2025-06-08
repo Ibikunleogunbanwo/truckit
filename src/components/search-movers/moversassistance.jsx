@@ -1,21 +1,112 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { debounce } from "lodash";
 
-const Moversassistance = () => {
-  const [needDriver, setNeedDriver] = useState(true);
-  const [needMover, setNeedMover] = useState(true);
-  const [needUnload, setNeedUnload] = useState(true);
+const Moversassistance = ({onMoversDetailsChange}) => {
+  
+  const [moversDetails, setMoversDetails] = useState({
+    needDriver: true,
+    needMover: true,
+    needUnload: true,
+    selectedVehicleType: "",
+    selectedNoOfMovers: "",
+    equipmentRequired: "",
+  });
 
   const baseButtonClasses =
     "w-1/2 p-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-white";
 
-  useEffect(() => {
-    console.log(needDriver);
-    console.log(needMover);
-    console.log(needUnload);
-  }, [needDriver, needMover, needUnload]);
 
+ const debouncedOnChange = useMemo(() => {
+    return debounce((info) => {
+      if (onMoversDetailsChange) onMoversDetailsChange(info);
+    }, 1000); // 500ms delay
+  }, [onMoversDetailsChange]);
+
+  useEffect(() => {
+    return () => debouncedOnChange.cancel();
+  }, [debouncedOnChange]);
+
+
+
+
+    const handleNeedDriver = (value) => {
+      const updatedNeedDriver = {
+        ...moversDetails,
+        needDriver: value,
+      };
+      setMoversDetails(updatedNeedDriver);
+      if (onMoversDetailsChange) {
+        onMoversDetailsChange(updatedNeedDriver);
+      }
+    };
+
+
+    const handleNeedMover = (value) => {
+      const updatedNeedMover = {
+        ...moversDetails,
+        needMover: value,
+      };
+      setMoversDetails(updatedNeedMover);
+      if (onMoversDetailsChange) {
+        onMoversDetailsChange(updatedNeedMover)
+      }
+    };
+
+
+    const handleNeedUnload = (value) => {
+      const updatedNeedUnload = {
+        ...moversDetails,
+        needUnload: value,
+      };
+
+    setMoversDetails(updatedNeedUnload);
+    if (onMoversDetailsChange){
+      onMoversDetailsChange(updatedNeedUnload);
+    } 
+    };
+
+  
+    const handleSelectedVehicleType = (e) => {
+      const updatedVehicleType = {
+        ...moversDetails,
+        selectedVehicleType: e.target.value,
+      };
+
+      setMoversDetails(updatedVehicleType);
+      if (onMoversDetailsChange){
+        onMoversDetailsChange(updatedVehicleType)
+      }
+    };
+
+
+    const handleselectedNoOfMovers = (e) => {
+      const updatedNoMovers = {
+        ...moversDetails,
+        selectedNoOfMovers: Number(e.target.value),
+      };
+
+      setMoversDetails(updatedNoMovers);
+      if (onMoversDetailsChange){
+        onMoversDetailsChange(updatedNoMovers);
+      }
+    };
+
+    const handleequipmentRequired = (e) => {
+      const updatedEquipmentRequired = {
+        ...moversDetails,
+        equipmentRequired: e.target.value,
+      };
+
+      setMoversDetails(updatedEquipmentRequired);
+      if (onMoversDetailsChange) {
+        debouncedOnChange(updatedEquipmentRequired);
+      }
+    };
+
+
+   
   return (
     <div>
       <p className="text-teal-500 font-bold mt-10 mb-4">
@@ -32,9 +123,9 @@ const Moversassistance = () => {
           </div>
           <div className="flex border-2 gap-1 border-gray-300 rounded-md p-1 w-36">
             <button
-              onClick={() => setNeedDriver(true)}
+              onClick={() => handleNeedDriver(true)}
               className={`${baseButtonClasses} ${
-                needDriver
+                moversDetails.needDriver
                   ? "bg-teal-500 text-white rounded-md"
                   : "bg-white rounded-md"
               }`}
@@ -42,9 +133,9 @@ const Moversassistance = () => {
               Yes
             </button>
             <button
-              onClick={() => setNeedDriver(false)}
+              onClick={() => handleNeedDriver(false)}
               className={`${baseButtonClasses} ${
-                needDriver === false
+                moversDetails.needDriver === false
                   ? "bg-teal-500 text-white rounded-md"
                   : "bg-white"
               }`}
@@ -63,9 +154,9 @@ const Moversassistance = () => {
           </div>
           <div className="flex border-2 border-gray-300 rounded-md p-1 w-36">
             <button
-              onClick={() => setNeedMover(true)}
+              onClick={() => handleNeedMover(true)}
               className={`${baseButtonClasses} ${
-                needMover
+                moversDetails.needMover
                   ? "bg-teal-500 text-white rounded-md"
                   : "bg-white rounded-md"
               }`}
@@ -73,9 +164,9 @@ const Moversassistance = () => {
               Yes
             </button>
             <button
-              onClick={() => setNeedMover(false)}
+              onClick={() => handleNeedMover(false)}
               className={`${baseButtonClasses} ${
-                needMover === false
+                moversDetails.needMover === false
                   ? "bg-teal-500 text-white rounded-md"
                   : "bg-white"
               }`}
@@ -94,9 +185,9 @@ const Moversassistance = () => {
           </div>
           <div className="flex border-2 border-gray-300 rounded-md p-1 w-36">
             <button
-              onClick={() => setNeedUnload(true)}
+              onClick={() => handleNeedUnload(true)}
               className={`${baseButtonClasses} ${
-                needUnload
+                moversDetails.needUnload
                   ? "bg-teal-500 text-white rounded-md"
                   : "bg-white rounded-md"
               }`}
@@ -104,9 +195,9 @@ const Moversassistance = () => {
               Yes
             </button>
             <button
-              onClick={() => setNeedUnload(false)}
+              onClick={() => handleNeedUnload(false)}
               className={`${baseButtonClasses} ${
-                needUnload === false
+                moversDetails.needUnload === false
                   ? "bg-teal-500 text-white rounded-md"
                   : "bg-white"
               }`}
@@ -135,8 +226,11 @@ const Moversassistance = () => {
             <select
               id="vehicle-type"
               name="vehicle-type"
+              value={moversDetails.selectedVehicleType}
+              onChange={handleSelectedVehicleType}
               className="w-full p-3 h-12 text-sm rounded-md border border-gray-300 outline-none"
             >
+              <option value="">Select a truck type</option>
               <option value="cargo-van">Cargo Van</option>
               <option value="pickup-truck">Pickup Truck</option>
               <option value="sprinter-van">Sprinter Van</option>
@@ -161,8 +255,11 @@ const Moversassistance = () => {
             <select
               id="Noofmovers"
               name="Noofmovers"
+              value={moversDetails.selectedNoOfMovers}
+              onChange={handleselectedNoOfMovers}
               className="w-full p-3 h-12 text-sm rounded-md border border-gray-300 outline-none"
             >
+              <option value="">Select number of movers</option>
               {[1, 2, 3, 4, 5].map((val) => (
                 <option key={val} value={val}>
                   {val}
@@ -180,6 +277,8 @@ const Moversassistance = () => {
           <input
             id="equipment-type"
             type="text"
+            value={moversDetails.equipmentRequired}
+            onChange={handleequipmentRequired}
             className="border border-gray-300 w-full rounded-md p-3 text-sm"
             placeholder="e.g. straps, dollies"
           />

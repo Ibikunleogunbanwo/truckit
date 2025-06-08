@@ -6,13 +6,16 @@ const ContinueWithLogin = ({
   linkText = "",
   linkHref = "#",
   widthClass = "w-24",
-  linkButton = "#"
+  linkButton = "#",
+  onClick
 
 }) => {
   return (
     <div className="flex items-center space-x-4">
       <Link href={linkButton}>
-      <button className={`bg-teal-500 text-white border px-2 text-xs lg:text-sm border-teal-500 shadow-md ${widthClass} h-12 rounded cursor-pointer`}>
+      <button 
+      onClick={onClick}
+      className={`bg-teal-500 text-white border px-2 text-xs lg:text-sm border-teal-500 shadow-md ${widthClass} h-12 rounded cursor-pointer`}>
         {buttonText}
       </button>
       </Link>

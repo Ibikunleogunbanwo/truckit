@@ -54,7 +54,7 @@ export default function SelectServices({ items, onItemsChange }) {
 
 
 
-  
+
   const handleAddItem = (e) => {
     e.preventDefault();
 
@@ -95,16 +95,15 @@ export default function SelectServices({ items, onItemsChange }) {
   };
 
   const handleDeleteItem = (category, subcategory, instruction) => {
-    setItems((prevItems) =>
-      prevItems.filter(
-        (item) =>
-          !(
-            item.category === category &&
-            item.subcategory === subcategory &&
-            item.instruction === instruction
-          )
-      )
+    const updatedItems = items.filter(
+      (item) =>
+        !(
+          item.category === category &&
+          item.subcategory === subcategory &&
+          item.instruction === instruction
+        )
     );
+    onItemsChange && onItemsChange(updatedItems);
   };
 
   // Group items by category
