@@ -1,16 +1,17 @@
 'use client';
 
-import React, { useState } from "react";
+import React from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Image from "next/image";
 import CalendarIcon from "../../assets/images/img-calender.png";
+import { format } from "date-fns";
 
-export default function MyDatePicker() {
-  const [startDate, setStartDate] = useState(null);
+export default function MyDatePicker({ date, onDateChange }) {
+  const placeholder = format(new Date(), "EEE, dd MMM yyyy");
+
   const today = new Date();
-  const formatted = today.toLocaleDateString();
-
+  today.setHours(0, 0, 0, 0);
 
   return (
     <div className="relative w-full h-16">
@@ -25,9 +26,10 @@ export default function MyDatePicker() {
       </span>
 
       <DatePicker
-        selected={startDate}
-        onChange={(date) => setStartDate(date)}
-        placeholderText={formatted}
+        selected={date} 
+        onChange={(date) => onDateChange(date)}
+        placeholderText={placeholder}
+        minDate={today}
         className="pl-10 pr-4 h-16 w-full border border-gray-300 rounded text-sm text-black/80 placeholder:text-black/80 focus:outline-none focus:ring-2 focus:ring-teal-500"
         wrapperClassName="w-full"
       />

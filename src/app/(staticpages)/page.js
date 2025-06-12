@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import heroimage from "../../assets/images/hero-image.png";
 import ContinueWithLogin from "@/components/landingpage/button";
@@ -6,14 +7,79 @@ import serviceleft from "../../assets/images/services-left.png";
 import serviceright from "../../assets/images/services-right.png";
 import MyDatePicker from "@/components/landingpage/datepicker";
 import truck from "../../assets/images/truck.png";
-import MyTimePicker from "@/components/landingpage/timepicker";
+import TimeRangeSelector from "@/components/landingpage/timepicker";
 import Locationpicker from "@/components/landingpage/locationpicker";
 import pickup from "../../assets/images/img-location.png";
 import dropoff from "../../assets/images/img-dropoff.png";
 import Carousel from "@/components/landingpage/carousel";
+import { useRouter } from "next/navigation";
+import { Toaster, toast } from "sonner";
 
 
 const Page = () => {
+
+  const router = useRouter();
+  const [pickupLocation, setPickUpLocation] = useState("");
+  const [dropOffLocation, setDropOffLocation] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [timeRange, setTimeRange] = useState({
+    fromTime: "",
+    toTime: "",
+  });
+
+ 
+  function getDurationInHours(fromTime, toTime) {
+    const [fromHour, fromMinute] = fromTime.split(":").map(Number);
+    const [toHour, toMinute] = toTime.split(":").map(Number);
+  
+    const fromTotalMinutes = fromHour * 60 + fromMinute;
+    const toTotalMinutes = toHour * 60 + toMinute;
+  
+    const durationMinutes = toTotalMinutes - fromTotalMinutes;
+    const durationHours = durationMinutes / 60;
+  
+    return `${durationHours} hrs`;
+  }
+
+
+  const handleSubmit = () => {
+    const errors = [];
+    if (!pickupLocation?.formatted_address) errors.push("Pickup location");
+    if (!dropOffLocation?.formatted_address) errors.push("Drop-off location");
+    if (!startDate) errors.push("Date");
+    if (!timeRange.fromTime || !timeRange.toTime) errors.push("Time range");
+  
+    if (errors.length > 0) {
+      toast.error(`Please fill in: ${errors.join(", ")}`);
+      return;
+    }
+  
+    try {
+      
+      const moveRequestDetails = {
+        pickupLocation: pickupLocation.formatted_address,
+        dropOffLocation: dropOffLocation.formatted_address,
+        date: startDate.toISOString().split('T')[0],
+        fromTime: timeRange.fromTime,
+        toTime: timeRange.toTime,
+        duration: getDurationInHours(timeRange.fromTime, timeRange.toTime),
+      };
+  
+      const query = new URLSearchParams();
+      Object.entries(moveRequestDetails).forEach(([key, value]) => {
+        if (value) query.append(key, value);
+      });
+  
+      const queryString = query.toString();
+     
+      router.push(`/search-movers?${queryString}`);
+    } catch (error) {
+      console.error("Routing error:", error);
+      alert("Failed to process your request. Please try again.");
+    }
+  };
+
+
   return (
     <div id="main" className="min-h-screen bg-white w-full">
       <div
@@ -31,10 +97,32 @@ const Page = () => {
               reliable movers to get you there stress-free.
             </p>
             <div className=" grid md:grid-cols-2 gap-4 my-2 w-full">
-              <Locationpicker src={pickup} />
-              <Locationpicker src={dropoff} placeholder="Drop-off Location" />
-              <MyDatePicker />
-              <MyTimePicker />
+              <Locationpicker
+                src={pickup}
+                placeholder="Pickup Location"
+                location={pickupLocation}
+                onLocationChange={setPickUpLocation}
+              />
+              <Locationpicker
+                src={dropoff}
+                placeholder="Drop-off Location"
+                location={dropOffLocation}
+                onLocationChange={setDropOffLocation}
+              />
+              <MyDatePicker 
+              date={startDate}
+              onDateChange={setStartDate}
+              />
+              <TimeRangeSelector
+                fromTime={timeRange.fromTime}
+                toTime={timeRange.toTime}
+                onFromTimeChange={(fromTime) =>
+                  setTimeRange((prev) => ({ ...prev, fromTime }))
+                }
+                onToTimeChange={(toTime) =>
+                  setTimeRange((prev) => ({ ...prev, toTime }))
+                }
+              />
             </div>
 
             <ContinueWithLogin
@@ -42,6 +130,7 @@ const Page = () => {
               linkText="Login to see user activity"
               linkHref="/login"
               widthClass="w-36"
+              onClick={handleSubmit}
             />
           </div>
         </div>
@@ -149,7 +238,7 @@ const Page = () => {
               linkText="Create account"
               linkHref="/register"
               widthClass="w-48"
-              linkButton="/login"
+              onClick={()=>{router.push("/login")}}
             />
           </div>
         </div>

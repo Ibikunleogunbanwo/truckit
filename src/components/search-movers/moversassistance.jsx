@@ -260,7 +260,7 @@ const Moversassistance = ({onMoversDetailsChange}) => {
               className="w-full p-3 h-12 text-sm rounded-md border border-gray-300 outline-none"
             >
               <option value="">Select number of movers</option>
-              {[1, 2, 3, 4, 5].map((val) => (
+              {[0,1, 2, 3, 4, 5].map((val) => (
                 <option key={val} value={val}>
                   {val}
                 </option>

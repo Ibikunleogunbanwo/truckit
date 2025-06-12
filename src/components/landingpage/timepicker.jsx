@@ -1,92 +1,75 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import TimeIcon from "../../assets/images/img-time.png";
-
 
 const generateTimeSlots = () => {
   const slots = [];
   for (let hour = 7; hour < 21; hour++) {
     for (let min = 0; min < 60; min += 30) {
-      const formattedHour = hour.toString().padStart(2, "0");
-      const formattedMin = min.toString().padStart(2, "0");
-      slots.push(`${formattedHour}:${formattedMin}`);
+      slots.push(`${hour.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}`);
     }
   }
   return slots;
 };
 
-export default function TimeRangeSelector() {
+export default function TimeRangeSelector({
+  fromTime,
+  toTime,
+  onFromTimeChange,
+  onToTimeChange
+}) {
   const timeSlots = generateTimeSlots();
-  const [fromTime, setFromTime] = useState("");
-  const [toTime, setToTime] = useState("");
 
   const handleFromTimeChange = (value) => {
-    setFromTime(value);
+    onFromTimeChange(value);
     if (toTime && toTime <= value) {
-      setToTime("");
+      onToTimeChange("");
     }
   };
-
-
 
   return (
     <div className="w-full">
       <div className="flex rounded border border-gray-300 overflow-hidden focus-within:ring-2 focus-within:ring-teal-500">
+        
+     
         <div className="relative w-1/2">
           <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <Image
-              src={TimeIcon}
-              alt="calendar icon"
-              width={20}
-              height={20}
-              className="h-5 w-5 text-black/80"
-            />
+            <Image src={TimeIcon} alt="Time icon" width={20} height={20} />
           </span>
           <select
             value={fromTime}
             onChange={(e) => handleFromTimeChange(e.target.value)}
-            className="w-full h-16 pl-10 pr-4 border-r-0 border-gray-300 text-sm text-black/80 focus:outline-none bg-white"
+            className="w-full h-16 pl-10 pr-4 border-r border-gray-300 text-sm text-black/80 focus:outline-none bg-white"
           >
-            <option value=" " disabled>
-              12:00
-            </option>
+            <option value="" disabled>From</option>
             {timeSlots.map((time) => (
-              <option key={time} value={time}>
-                {time}
-              </option>
+              <option key={`from-${time}`} value={time}>{time}</option>
             ))}
           </select>
         </div>
 
-        {/* TO SELECT */}
+      
         <div className="relative w-1/2">
-        <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <Image
-              src={TimeIcon}
-              alt="calendar icon"
-              width={20}
-              height={20}
-              className="h-5 w-5 text-black/80"
-            />
+          <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+            <Image src={TimeIcon} alt="Time icon" width={20} height={20} />
           </span>
-        <select
-          value={toTime}
-          onChange={(e) => setToTime(e.target.value)}
-          className="w-full h-16 pl-10 pr-4 border-r-0 border-gray-300 text-sm text-black/80 focus:outline-none bg-white"
-        >
-          <option value="" disabled>
-            12:00
-          </option>
-          {timeSlots
-            .filter((time) => !fromTime || time > fromTime)
-            .map((time) => (
-              <option key={time} value={time}>
-                {time}
-              </option>
-            ))}
-        </select>
+          <select
+            value={toTime}
+            onChange={(e) => onToTimeChange(e.target.value)}
+            disabled={!fromTime}
+            className={`w-full h-16 pl-10 pr-4 text-sm text-black/80 focus:outline-none bg-white ${
+              !fromTime ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            <option value="" disabled>To</option>
+            {timeSlots
+              .filter((time) => !fromTime || time > fromTime)
+              .map((time) => (
+                <option key={`to-${time}`} value={time}>{time}</option>
+              ))}
+          </select>
         </div>
       </div>
     </div>

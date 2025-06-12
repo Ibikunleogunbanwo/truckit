@@ -7,10 +7,69 @@ import Logo from "@/components/logo";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import ContinueWithLogin from "@/components/landingpage/button";
+import VerificationEmail from "@/components/verificationemail-modal";
+import { z } from "zod";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
+
+const schema = z
+  .object({
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
+    email: z.string().email("Valid Email Required"),
+    phone: z.string().refine(
+      (val) => {
+        const phone = parsePhoneNumberFromString(val, "CA");
+        return phone?.isValid();
+      },
+      { message: "Invalid phone number" }
+    ),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[a-z]/, "Password Must include a lowercase letter")
+      .regex(/[A-Z]/, "Password Must include an uppercase letter")
+      .regex(/[0-9]/, "Password Must include a number")
+      .regex(/[^a-zA-Z0-9]/, "Password Must include a special character"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords do not match",
+  });
+
+
 
 const Signup = () => {
   const [showPassword1, setShowPassword1] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [isOpen, setIsOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const result = schema.safeParse(formData);
+
+    if (!result.success) {
+      const newError = {};
+      result.error.issues.forEach((issue) => {
+        newError[issue.path[0]] = issue.message;
+      });
+      setErrors(newError);
+    } else {
+      console.log("Valid Data:", result.data);
+      setErrors({});
+      setIsOpen(true);
+    }
+  };
 
   return (
     <div className="flex flex-col max-h-screen bg-white justify-center mt-20 px-4">
@@ -36,11 +95,18 @@ const Signup = () => {
               id="email"
               name="email"
               type="email"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+              required
               placeholder="sample@gmail.com"
               autoComplete="email"
-              required
               className="w-full h-12 border border-gray-300 rounded px-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
+            {errors.email && (
+              <span className="error text-red-500 text-xs">{errors.email}</span>
+            )}
           </div>
 
           <div>
@@ -51,10 +117,19 @@ const Signup = () => {
               id="phone"
               name="phone"
               type="tel"
+              value={formData.phone}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
               autoComplete="tel"
               required
               className="w-full h-12 border border-gray-300 rounded px-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
+            <div className="h-4 mt-1">
+            {errors.phone && (
+              <span className="error text-red-500 text-xs">{errors.phone}</span>
+            )}
+            </div>
           </div>
 
           <div>
@@ -65,10 +140,19 @@ const Signup = () => {
               id="firstName"
               name="firstName"
               type="text"
+              value={formData.firstName}
+              onChange={(e) =>
+                setFormData({ ...formData, firstName: e.target.value })
+              }
               autoComplete="given-name"
               required
               className="w-full h-12 border border-gray-300 rounded px-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
+            {errors.firstName && (
+              <span className="error text-red-500 text-xs">
+                {errors.firstName}
+              </span>
+            )}
           </div>
 
           <div>
@@ -79,10 +163,19 @@ const Signup = () => {
               id="lastName"
               name="lastName"
               type="text"
+              value={formData.lastName}
+              onChange={(e) =>
+                setFormData({ ...formData, lastName: e.target.value })
+              }
               autoComplete="family-name"
               required
               className="w-full h-12 border border-gray-300 rounded px-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
+            {errors.lastName && (
+              <span className="error text-red-500 text-xs">
+                {errors.lastName}
+              </span>
+            )}
           </div>
 
           <div className="relative col-span-1">
@@ -93,6 +186,10 @@ const Signup = () => {
               id="password"
               name="password"
               type={showPassword1 ? "text" : "password"}
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
               autoComplete="new-password"
               required
               className="w-full h-12 border border-gray-300 rounded px-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
@@ -104,6 +201,11 @@ const Signup = () => {
             >
               {showPassword1 ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
+            {errors.password && (
+              <span className="error text-red-500 text-xs">
+                {errors.password}
+              </span>
+            )}
           </div>
 
           <div className="relative col-span-1">
@@ -117,6 +219,10 @@ const Signup = () => {
               id="confirmPassword"
               name="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
+              value={formData.confirmPassword}
+              onChange={(e) =>
+                setFormData({ ...formData, confirmPassword: e.target.value })
+              }
               autoComplete="new-password"
               required
               className="w-full h-12 border border-gray-300 rounded px-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
@@ -128,16 +234,32 @@ const Signup = () => {
             >
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
+            {errors.confirmPassword && (
+              <span className="error text-red-500 text-xs">
+                {errors.confirmPassword}
+              </span>
+            )}
           </div>
+
+          {formData.confirmPassword &&
+            formData.password !== formData.confirmPassword && (
+              <p className="text-red-500 place-items-center text-sm mt-2">
+                Passwords do not match
+              </p>
+            )}
         </form>
 
         <div className="w-full my-6 ">
           <ContinueWithLogin
             buttonText="Create account"
             linkText="Sign in"
-            linkHref="/login"
             widthClass="w-36"
+            linkHref="/login"
+            onClick={handleSubmit}
           />
+          <div>
+            <VerificationEmail isOpen={isOpen} setIsOpen={setIsOpen} />
+          </div>
         </div>
       </div>
     </div>

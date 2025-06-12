@@ -1,5 +1,7 @@
 import { Geist, Geist_Mono,Montserrat, Inknut_Antiqua} from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +41,7 @@ export default function RootLayout({ children }) {
         className={`${inknut.variable} ${montserrat.variable} antialiased`}
       >
         {children}
+        <Toaster richColors position="bottom-right" />
       </body>
     </html>
   );

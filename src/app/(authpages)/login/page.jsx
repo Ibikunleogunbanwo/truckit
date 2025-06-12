@@ -7,9 +7,47 @@ import logowhite from "../../../assets/images/logo-white.png";
 import ContinueWithLogin from "@/components/landingpage/button";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { z } from "zod";
+import { useRouter } from "next/navigation";
+
+const schema = z.object({
+  email: z.string().email("Invalid Email Adress"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[a-z]/, "Password Must include a lowercase letter")
+    .regex(/[A-Z]/, "Password Must include an uppercase letter")
+    .regex(/[0-9]/, "Password Must include a number")
+    .regex(/[^a-zA-Z0-9]/, "Password Must include a special character"),
+});
 
 const Signin = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const router = useRouter();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const result = schema.safeParse(loginData);
+    if (!result.success) {
+      const newError = {};
+      result.error.issues.forEach((issue) => {
+        newError[issue.path[0]] = issue.message;
+      });
+
+      setErrors(newError);
+    } else {
+      console.log("Valid Data:", result.data);
+      setErrors({});
+      router.push("/");
+    }
+  };
 
   const togglepassword = () => {
     setShowPassword(!showPassword);
@@ -46,7 +84,18 @@ const Signin = () => {
                 placeholder="sample@gmail.com"
                 autoComplete="email"
                 type="email"
+                value={loginData.email}
+                onChange={(e) =>
+                  setLoginData({ ...loginData, email: e.target.value })
+                }
               />
+              <div className="h-4 mt-1">
+                {errors.email && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {errors.email}
+                  </span>
+                )}
+              </div>
             </div>
 
             <div className="relative w-[300px] md:w-[320px] flex flex-col">
@@ -58,15 +107,27 @@ const Signin = () => {
                 className="h-12 border border-gray-300 rounded px-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                 autoComplete="current-password"
                 type={showPassword ? "text" : "password"}
+                value={loginData.password}
+                onChange={(e) =>
+                  setLoginData({ ...loginData, password: e.target.value })
+                }
               />
 
               <button
                 type="button"
-                onClick={() => togglepassword()}
-                className="absolute inset-y-0 right-3 top-4 flex items-center text-gray-500 cursor-pointer"
+                onClick={togglepassword}
+                className="absolute right-3 top-9 text-gray-500"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
+
+              <div className="h-4 mt-1">
+                {errors.password && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {errors.password}
+                  </span>
+                )}
+              </div>
             </div>
           </form>
 
@@ -76,6 +137,7 @@ const Signin = () => {
               linkText="Sign up"
               linkHref="/register"
               widthClass="w-28"
+              onClick={handleSubmit}
             />
           </div>
         </div>
