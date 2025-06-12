@@ -102,11 +102,11 @@ const Searchmovers = () => {
             <p className="text-sm leading-relaxed text-slate-700 pr-2">
               You're about to book a moving service from{" "}
               <span className="text-teal-600 font-semibold px-3 py-1.5 rounded-lg block mt-2 mb-2 text-center shadow-sm border ">
-                {pickupLocation}
+                {pickupLocation || <span className="italic text-slate-400">[Pickup location not set]</span>}
               </span>{" "}
               to{" "}
               <span className="text-teal-600 font-semibold  px-3 py-1.5 rounded-lg block mt-2 text-center shadow-sm border">
-                {dropOffLocation}
+                {dropOffLocation || <span className="italic text-slate-400">[Drop off location not set]</span>}
               </span>
             </p>
           </div>
@@ -118,7 +118,7 @@ const Searchmovers = () => {
                 <span className="text-slate-600 text-sm">Date:</span>
               </div>
               <span className="font-semibold text-teal-600 bg-gradient-to-r from-white to-teal-50/50 px-4 py-2 rounded-lg text-sm ml-3.5 sm:ml-0 shadow-sm border border-teal-100/40">
-                {date}
+                {date || <span className="italic text-slate-400">[Date not set]</span>}
               </span>
             </div>
 
@@ -128,7 +128,7 @@ const Searchmovers = () => {
                 <span className="text-slate-600 text-sm">Time:</span>
               </div>
               <span className="font-semibold text-teal-600 bg-gradient-to-r from-white to-teal-50/50 px-4 py-2 rounded-lg text-sm ml-3.5 sm:ml-0 shadow-sm border border-teal-100/40">
-                {fromTime} - {toTime}
+                {fromTime || <span className="italic text-slate-400">[00:00]</span>} - {toTime || <span className="italic text-slate-400">[00:00]</span>}
               </span>
             </div>
 
@@ -138,7 +138,7 @@ const Searchmovers = () => {
                 <span className="text-slate-600 text-sm">Duration:</span>
               </div>
               <span className="font-semibold text-teal-600 bg-gradient-to-r from-white to-teal-50/50 px-4 py-2 rounded-lg text-sm ml-3.5 sm:ml-0 shadow-sm border border-teal-100/40">
-                {duration}
+                {duration || <span className="italic text-slate-400">[0hrs]</span>}
               </span>
             </div>
           </div>
