@@ -54,7 +54,7 @@ const SubmissionModal = ({ isOpen, setIsOpen }) => {
             </button>
             <Link href="/">
               <p className="text-gray-600 underline md:text-sm text-center py-2 cursor-pointer">
-                I’m not interested
+                Log in
               </p>
             </Link>
           </div>

@@ -38,24 +38,44 @@ const Searchmovers = () => {
   const toTime = searchParams.get("toTime");
   const duration = searchParams.get("duration");
 
+  const RequestDetails = {
+    PickupLocation: pickupLocation,
+    PropOffLocation: dropOffLocation,
+    Date: date,
+    FromTime:fromTime,
+    ToTime: toTime,
+    Duration: duration,
+  }
+
   const handleValidContactChange = (validDataOrNull) => {
     setContactInfo(validDataOrNull);
   };
 
   const handleSubmit = () => {
+    const generateRequestId = (length = 10) => {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      return Array.from(crypto.getRandomValues(new Uint8Array(length)))
+        .map((byte) => chars[byte % chars.length])
+        .join('');
+    };
+  
+    const requestId = generateRequestId();
+  
     const formData = {
+      requestId:generateRequestId(),
+      RequestDetails,
       accessibility: accessibilityData,
       items,
       movers: moversDetails,
       contact: contactInfo,
       agreedToTerms: isChecked,
     };
-
+  
     if (!formData.items || formData.items.length === 0) {
       toast("Please select at least one Category & Sub category.");
       return;
     }
-
+  
     if (
       !formData.accessibility ||
       Object.keys(formData.accessibility).length === 0
@@ -63,7 +83,7 @@ const Searchmovers = () => {
       toast.error("Please fill out accessibility information.");
       return;
     }
-
+  
     if (
       String(formData.movers.Vehicleneedeed).trim() === "" ||
       String(formData.movers.NoofMovers).trim() === ""
@@ -71,22 +91,26 @@ const Searchmovers = () => {
       toast.error("Please fill out truck type and movers needed information.");
       return;
     }
-
+  
     if (!contactInfo) {
       toast.error("Please fix errors before submitting.");
       return;
     }
-
+  
     if (!formData.agreedToTerms) {
       toast.error("Please agree to the terms before submitting.");
       return;
     }
-
+  
     console.log("Submitting form data:", formData);
     toast.success("Your request has been submitted");
     setIsOpen(true);
-
-    // fetch('/api/submit', { method: 'POST', body: JSON.stringify(formData) })
+  
+    // fetch('/api/submit', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(formData)
+    // });
   };
 
   return (
