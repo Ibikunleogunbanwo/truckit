@@ -56,10 +56,14 @@ export default function Page() {
   const [cancel, setCancel] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [openSections, setOpenSections] = useState({});
+  const [openCompletion, setOpenCompletion] = useState(false);
+  const [showCompleteDialog, setShowCompleteDialog] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+
 
   const handleCompleted = () => {
     setCompleted(true);
-    console.log("completed:", completed);
+    console.log("completed status:", completed);
     toast.success("Move has been completed");
   };
 
@@ -157,13 +161,13 @@ export default function Page() {
   ];
 
   return (
-    <div className="w-full overflow-y-auto">
-      <div className="mt-2 sticky top-0 z-[1000]">
+    <div className="w-full md:mt-22">
+         <div className="md:mt-4 fixed top-0 z-50">
         <DashboardHeader />
       </div>
 
       <div className="flex h-screen">
-        <div className=" py-4 px-6 mb-4 mt-6 w-full">
+        <div className=" py-4 px-6 mb-4 mt-5 w-full">
           <div className="flex gap-2 px-5">
             <p className="text-xs text-black font-bold ">Good Morning, </p>
             <div className="flex gap-2">
@@ -235,84 +239,72 @@ export default function Page() {
                   </p>
 
                   {/* Confirmed and Drop down Menu */}
-                  <div className="flex gap-2 items-center">
+                  <div className="flex items-center">
                     <p className="text-green-500 text-xs lg:text-sm lg:font-semibold">
                       Confirmed
                     </p>
-                    <DropdownMenu>
+
+                    <DropdownMenu open={openCompletion} onOpenChange={setOpenCompletion}>
                       <DropdownMenuTrigger asChild>
-                        <button aria-label="Open menu">
-                          <EllipsisVertical className="text-teal-500 bg-teal-50 size-4" />
-                        </button>
+                        <Button aria-label="Open menu">
+                          <EllipsisVertical className="text-teal-500 bg-teal-100 size-4" />
+                        </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem asChild>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <button
-                                type="button"
-                                className="flex gap-2 p-2 items-center text-sm cursor-pointer w-full"
-                              >
-                                <CircleCheck />
-                                Mark move as completed
-                              </button>
-                            </AlertDialogTrigger>
-
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Complete this Move?
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  This action cannot be undone. Are you sure you
-                                  want to submit this move as completed?
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Go back</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleCompleted}>
-                                  Yes, submit it
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                        <DropdownMenuItem onSelect={() => setShowCompleteDialog(true)}>
+                          <div className="flex gap-2 py-2 items-center text-sm cursor-pointer w-full">
+                            <CircleCheck />
+                            Mark move as completed
+                          </div>
                         </DropdownMenuItem>
 
-                        <DropdownMenuItem asChild>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <button
-                                type="button"
-                                className="flex gap-2 items-center p-2 text-sm text-red-500 cursor-pointer w-full"
-                              >
-                                <CircleX />
-                                Cancel appointment
-                              </button>
-                            </AlertDialogTrigger>
-
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Cancel this appointment?
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  This action cannot be undone. Are you sure you
-                                  want to cancel this appointment?
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Go back</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleCancel}>
-                                  Yes, cancel it
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                        <DropdownMenuItem onSelect={() => setShowCancelDialog(true)}>
+                          <div className="flex gap-2 items-center py-2 text-sm text-red-500 cursor-pointer w-full">
+                            <CircleX />
+                            Cancel appointment
+                          </div>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  </div>
-                </div>
+                  
+                    <AlertDialog open={showCompleteDialog} onOpenChange={setShowCompleteDialog}>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Mark move as completed?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. Are you sure you want to Mark move as completed?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Go back</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleCompleted}>
+                              Yes, complete move.
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+
+                      {/* Cancel Appointment Dialog */}
+                      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Cancel this move?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. 
+                              Are you sure you want to cancel this move request?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Go back</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleCancel}>
+                              Yes, cancel cancel move request.
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+
+                    </div>
+                    </div>
 
                 {/* Move Details */}
                 <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -334,6 +326,7 @@ export default function Page() {
                             To:{" "}
                             <span className="text-gray-400 text-xs lg:text-sm">
                               456 Wood Street, Toronto
+                            
                             </span>
                           </span>
                         </p>
@@ -365,7 +358,6 @@ export default function Page() {
                               </TabsTrigger>
                             ))}
                           </TabsList>
-
                           <TabsContent value="items">
                             <div className="overflow-x-auto rounded-t-xl border border-gray-300 mt-4">
                               <Table className="min-w-full border-collapse table-auto">
@@ -416,6 +408,7 @@ export default function Page() {
                           ))}
                         </Tabs>
                       </div>
+
                       {/* FOR SMALL AND MEDIUM SCREEN */}
                       <div className="lg:hidden">
                         <Accordion
@@ -550,6 +543,8 @@ export default function Page() {
                     </div>
                   </CollapsibleContent>
                 </Collapsible>
+
+
               </div>
             </div>
           </div>

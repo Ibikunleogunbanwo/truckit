@@ -115,7 +115,7 @@ export default function SelectServices({ items, onItemsChange }) {
 
   return (
     <div className="grid">
-      <div className="w-full flex flex-col md:flex-row gap-6 mx-auto mt-4">
+      <div className="w-full flex flex-col md:flex-row gap-6 mx-auto mt-4 ">
         {/* Left column */}
         <div className="w-full md:w-1/2 flex flex-col justify-start space-y-4">
           <div className="flex flex-col lg:flex-row gap-4">
@@ -181,7 +181,7 @@ export default function SelectServices({ items, onItemsChange }) {
               name="instruction"
               rows="1"
               className="w-full border rounded p-2 resize-none h-24 sm:h-28 md:h-12"
-              placeholder=" If Others List items here."
+              placeholder=""
               value={instruction}
               onChange={handleInstructionChange}
             />
@@ -203,14 +203,14 @@ export default function SelectServices({ items, onItemsChange }) {
             htmlFor="instruction"
             className="text-xs md:text-sm mb-2 font-medium"
           >
-            Special handling instructions/Description
+            Instructions/Description
           </label>
           <textarea
             id="instruction"
             name="instruction"
             rows="1"
             className="w-full border rounded p-2 resize-none h-24 sm:h-28 md:h-12"
-            placeholder=" If Others List items here."
+            placeholder="List items here."
             value={instruction}
             onChange={handleInstructionChange}
           />
@@ -218,7 +218,7 @@ export default function SelectServices({ items, onItemsChange }) {
       </div>
 
       {/* Grouped Result Display */}
-      <div className="w-full md:w-3/4 mt-6 space-y-6">
+      <div className="w-full md:w-3/4 mt-6 space-y-6 ">
         {Object.entries(groupedItems).map(([category, categoryItems]) => (
           <div key={category} className="border rounded p-4">
             <h3 className="text-md md:text-lg font-semibold mb-2">

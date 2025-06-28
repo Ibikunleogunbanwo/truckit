@@ -53,7 +53,7 @@ const Accessibility = ({ entries, onEntriesChange }) => {
 
   return (
     <div className="grid">
-      <p className="text-teal-500 font-bold mt-10">
+      <p className="text-teal-500 font-bold">
         2. Accessibility and Logistics
       </p>
 
@@ -151,7 +151,7 @@ const Accessibility = ({ entries, onEntriesChange }) => {
             htmlFor="instruction"
             className="text-xs md:text-sm mb-2 font-medium"
           >
-            Special Entry Handling Instructions
+            Special Entry Instructions
           </label>
           <textarea
             id="instruction"

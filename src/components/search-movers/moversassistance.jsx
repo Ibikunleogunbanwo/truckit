@@ -109,19 +109,19 @@ const Moversassistance = ({onMoversDetailsChange}) => {
    
   return (
     <div>
-      <p className="text-teal-500 font-bold mt-10 mb-4">
+      <p className="text-teal-500 font-bold mb-4">
         3. Movers and assistance
       </p>
 
-      <div className="flex flex-col md:flex-row md:justify-between items-start text-sm gap-6 md:px-8 mb-4">
+      <div className="flex flex-col md:flex-row md:justify-between items-start text-sm gap-6 md:px-4 mb-2">
         {/* Driver */}
         <div className="flex flex-col md:w-1/4 ">
-          <div className="min-h-[40px]">
-            <label htmlFor="needDriver" className="font-medium">
+          <div className="mb-1">
+            <label htmlFor="needDriver" className="font-semibold text-xs lg:text-sm">
               Do you need a driver?
             </label>
           </div>
-          <div className="flex border-2 gap-1 border-gray-300 rounded-md p-1 w-36">
+          <div className="flex border-2 gap-1 border-gray-300 rounded-md p-1 w-36 md:w-24 lg:w-36">
             <button
               onClick={() => handleNeedDriver(true)}
               className={`${baseButtonClasses} ${
@@ -147,12 +147,12 @@ const Moversassistance = ({onMoversDetailsChange}) => {
 
         {/* Mover Load */}
         <div className="flex flex-col md:w-1/4">
-          <div className="min-h-[40px]">
-            <label htmlFor="needMover" className="font-medium">
-              Do you need movers to help you load?
+          <div className="mb-1">
+            <label htmlFor="needMover" className="font-semibold text-xs lg:text-sm">
+              Need movers to load?
             </label>
           </div>
-          <div className="flex border-2 border-gray-300 rounded-md p-1 w-36">
+          <div className="flex border-2 border-gray-300 rounded-md p-1 w-36 md:w-24 lg:w-36">
             <button
               onClick={() => handleNeedMover(true)}
               className={`${baseButtonClasses} ${
@@ -178,12 +178,12 @@ const Moversassistance = ({onMoversDetailsChange}) => {
 
         {/* Mover Unload */}
         <div className="flex flex-col md:w-1/4">
-          <div className="min-h-[40px]">
-            <label htmlFor="needUnload" className="font-medium">
-              Do you need movers to help you unload?
+          <div className="mb-1">
+            <label htmlFor="needUnload" className="font-semibold text-xs lg:text-sm">
+              Need movers to unload?
             </label>
           </div>
-          <div className="flex border-2 border-gray-300 rounded-md p-1 w-36">
+          <div className="flex border-2 border-gray-300 rounded-md p-1 w-36 md:w-24 lg:w-36">
             <button
               onClick={() => handleNeedUnload(true)}
               className={`${baseButtonClasses} ${
@@ -213,12 +213,12 @@ const Moversassistance = ({onMoversDetailsChange}) => {
         <div className="flex flex-col lg:flex-row gap-2 w-full lg:w-1/2 rounded-md">
           {/* Vehicle Type */}
           <div className="rounded-md w-full md:flex-1">
-            <div className="flex justify-between items-center">
-              <label htmlFor="vehicle-type" className=" text-sm font-medium">
+            <div className="flex justify-between items-center mb-1">
+              <label htmlFor="vehicle-type" className=" text-sm font-semibold">
                 Truck Type
               </label>
               <Link href="/help/choose-truck">
-                <span className="text-[10px] text-teal-500 cursor-pointer underline">
+                <span className="text-xs text-teal-500 cursor-pointer underline">
                   Need help choosing?
                 </span>
               </Link>
@@ -249,7 +249,7 @@ const Moversassistance = ({onMoversDetailsChange}) => {
 
           {/* Number of Movers */}
           <div className="rounded-md w-full mt-1 md:flex-1">
-            <label htmlFor="Noofmovers" className="block text-sm font-medium">
+            <label htmlFor="Noofmovers" className="block text-sm font-semibold mb-1">
               Number of movers needed:
             </label>
             <select
@@ -271,7 +271,7 @@ const Moversassistance = ({onMoversDetailsChange}) => {
 
         {/* Equipment Input */}
         <div className="lg:w-1/2 mt-1 rounded-md ">
-          <label htmlFor="equipment-type" className="block text-sm font-medium">
+          <label htmlFor="equipment-type" className="block text-sm font-semibold mb-1">
             Equipment Required:
           </label>
           <input

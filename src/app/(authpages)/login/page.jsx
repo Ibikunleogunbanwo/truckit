@@ -45,7 +45,7 @@ const Signin = () => {
     } else {
       console.log("Valid Data:", result.data);
       setErrors({});
-      router.push("/");
+      router.push("/dashboard");
     }
   };
 

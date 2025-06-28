@@ -90,11 +90,11 @@ const ContactInfo = ({ onContactChange }) => {
 
   return (
     <div>
-    <p className="text-teal-500 w-full font-bold mt-10 mb-4">
+    <p className="text-teal-500 w-full font-bold mb-4">
       4. Contact information
     </p>
   
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 my-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 my-2">
       {/* First Name */}
       <div className="flex flex-col">
         <label htmlFor="firstName" className="text-sm mb-1 font-semibold">

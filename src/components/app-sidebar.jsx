@@ -28,11 +28,12 @@ import quotationimgInactive from "../assets/images/Quotation.svg"
 import manageuserinActive from "../assets/images/Manageaccount.svg"
 import manageuserActive from "../assets/images/ManageAccountActive.svg"
 import logout from "../assets/images/Logout.svg"
+import { useSidebar } from "@/components/ui/sidebar";
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "Ayo Ogunbanwo",
+    email: "luli@gmail.com",
     avatar: "/avatars/shadcn.jpg",
   },
 };
@@ -68,7 +69,7 @@ const items = [
 
   {
     title: "Quotations",
-    url: "/dashboard/Quotation",
+    url: "/quotations",
     icon: (active) => (
       <Image
         src={active ? reqimgActive : reqimg}
@@ -116,6 +117,22 @@ const items = [
 export function AppSidebar(props) {
   const pathname = usePathname();
 
+  const { setOpenMobile, isMobile, setOpen } = useSidebar();
+
+  const handleLeMobileClose = (url, forceMobileFalse = false) => {
+    if (forceMobileFalse) {
+      return;
+    } 
+    // Normal behavior - close mobile sidebar when clicking links
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
+
+
+
+
+
   return (
     <Sidebar variant="sidebar" collapsible="icon" {...props}>
       <SidebarHeader>
@@ -136,13 +153,13 @@ export function AppSidebar(props) {
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent >
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {
                 const isActive =
-                  pathname === item.url || pathname.startsWith(`${item.url}/`);
+                  pathname === item.url;
 
                 return (
                   <SidebarMenuItem key={item.title}>
@@ -151,7 +168,9 @@ export function AppSidebar(props) {
                       data-active={isActive}
                       className="transition-colors hover:bg-sidebar-accent"
                     >
-                      <Link href={item.url} className="flex items-center gap-3">
+                      <Link href={item.url} 
+                      onClick={() => handleLeMobileClose(item.url, false)}
+                      className="flex items-center gap-3">
                         <div className="flex items-center justify-center min-w-[1.5rem]">
                           {item.icon(isActive)}
                         </div>

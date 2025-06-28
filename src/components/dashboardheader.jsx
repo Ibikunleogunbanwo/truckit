@@ -23,8 +23,8 @@ const DashboardHeader = ({ sectionLink = "#" , SectionTitle = ""}) => {
           />
           <Breadcrumb>
             <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
+              <BreadcrumbItem className="hidden md:block font-montserrat">
+                <BreadcrumbLink href="/">Home</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
