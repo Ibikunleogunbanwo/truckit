@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Arrowicon from "../../../assets/images/Arrow - Left.png";
 import SelectServices from "@/components/search-movers/selectservices";
@@ -31,21 +31,58 @@ const Searchmovers = () => {
 
   const searchParams = useSearchParams();
 
-  const pickupLocation = searchParams.get("pickupLocation");
-  const dropOffLocation = searchParams.get("dropOffLocation");
-  const date = searchParams.get("date");
-  const fromTime = searchParams.get("fromTime");
-  const toTime = searchParams.get("toTime");
-  const duration = searchParams.get("duration");
+  
+  const moveDetails = useMemo(() => {
+    const raw = searchParams.get("move");
+    try {
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }, [searchParams]);
+  
+  const parsedMove = moveDetails || {};
 
+  const {
+    pickupLocation = {},
+    dropOffLocation = {},
+    date = "",
+    fromTime = "",
+    toTime = "",
+    duration = ""
+  } = parsedMove;
+  
   const RequestDetails = {
-    PickupLocation: pickupLocation,
-    PropOffLocation: dropOffLocation,
-    Date: date,
-    FromTime:fromTime,
-    ToTime: toTime,
-    Duration: duration,
-  }
+    PickupLocation: {
+      fullAddress: parsedMove.pickupFullAddress || "",
+      apartmentNumber: parsedMove.pickupApartmentNumber || "",
+      streetNumber: parsedMove.pickupStreetNumber || "",
+      streetName: parsedMove.pickupStreetName || "",
+      city: parsedMove.pickupCity || "",
+      province: parsedMove.pickupProvince || "",
+      postalCode: parsedMove.pickupPostalCode || "",
+      country: parsedMove.pickupCountry || "",
+      latitude: parsedMove.pickupLat || "",
+      longitude: parsedMove.pickupLng || "",
+    },
+    DropOffLocation: {
+      fullAddress: parsedMove.dropOffFullAddress || "",
+      apartmentNumber: parsedMove.dropOffApartmentNumber || "",
+      streetNumber: parsedMove.dropOffStreetNumber || "",
+      streetName: parsedMove.dropOffStreetName || "",
+      city: parsedMove.dropOffCity || "",
+      province: parsedMove.dropOffProvince || "",
+      postalCode: parsedMove.dropOffPostalCode || "",
+      country: parsedMove.dropOffCountry || "",
+      latitude: parsedMove.dropOffLat || "",
+      longitude: parsedMove.dropOffLng || "",
+    },
+    Date: parsedMove.date,
+    FromTime: parsedMove.fromTime,
+    ToTime: parsedMove.toTime,
+    Duration: parsedMove.duration,
+  };
+
 
   const handleValidContactChange = (validDataOrNull) => {
     setContactInfo(validDataOrNull);
@@ -63,41 +100,42 @@ const Searchmovers = () => {
   
     const formData = {
       requestId:generateRequestId(),
-      RequestDetails,
-      accessibility: accessibilityData,
-      items,
-      movers: moversDetails,
-      contact: contactInfo,
+      request_details: RequestDetails,
+      accessibility_details: accessibilityData,
+      move_items: items,
+      movers_requirements: moversDetails,
+      move__contacts: contactInfo,
       agreedToTerms: isChecked,
     };
   
-    if (!formData.items || formData.items.length === 0) {
+    console.log(moversDetails)
+    
+
+    if (!items || items.length === 0) {
       toast("Please select at least one Category & Sub category.");
       return;
     }
   
-    if (
-      !formData.accessibility ||
-      Object.keys(formData.accessibility).length === 0
-    ) {
+    if (!accessibilityData || Object.keys(accessibilityData).length === 0) {
       toast.error("Please fill out accessibility information.");
       return;
     }
   
     if (
-      String(formData.movers.Vehicleneedeed).trim() === "" ||
-      String(formData.movers.NoofMovers).trim() === ""
+      !moversDetails?.selectedVehicleType ?.trim() ||
+      typeof moversDetails?.selectedNoOfMovers !== 'number' ||
+      moversDetails.selectedNoOfMovers <= 0
     ) {
       toast.error("Please fill out truck type and movers needed information.");
       return;
     }
   
-    if (!contactInfo) {
-      toast.error("Please fix errors before submitting.");
+    if (!contactInfo || Object.keys(contactInfo).length === 0) {
+      toast.error("Please fill out contact information.");
       return;
     }
   
-    if (!formData.agreedToTerms) {
+    if (!isChecked) {
       toast.error("Please agree to the terms before submitting.");
       return;
     }
@@ -121,16 +159,16 @@ const Searchmovers = () => {
         </div>
 
         <div className="grid gap-4 p-5 rounded-xl border border-teal-100/60 shadow-lg ">
-          <div className="flex items-start gap-3">
+          <div className="flex items-start">
             <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-teal-400 to-emerald-400 mt-1.5 flex-shrink-0 shadow-sm"></div>
-            <p className="text-sm leading-relaxed text-slate-700 pr-2">
+            <p className="text-sm leading-relaxed text-slate-700 pr-2 ml-2 mb-4">
               You're about to book a moving service from{" "}
-              <span className="text-teal-600 font-semibold px-3 py-1.5 rounded-lg block mt-2 mb-2 text-center shadow-sm border ">
-                {pickupLocation || <span className="italic text-slate-400">[Pickup location not set]</span>}
-              </span>{" "}
+              <span className="text-teal-600 font-semibold px-3 py-1.5 rounded-lg block mt-3 mb-2 text-center shadow-sm border">
+                {parsedMove.pickupFullAddress?.trim() || <span className="italic text-slate-400">[Pickup location not set]</span>}
+              </span>
               to{" "}
-              <span className="text-teal-600 font-semibold  px-3 py-1.5 rounded-lg block mt-2 text-center shadow-sm border">
-                {dropOffLocation || <span className="italic text-slate-400">[Drop off location not set]</span>}
+              <span className="text-teal-600 font-semibold px-3 py-1.5 rounded-lg block mt-2 text-center shadow-sm border">
+                {parsedMove.dropOffFullAddress || <span className="italic text-slate-400">[Drop off location not set]</span>}
               </span>
             </p>
           </div>

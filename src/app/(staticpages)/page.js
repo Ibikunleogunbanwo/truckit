@@ -19,8 +19,8 @@ import { Toaster, toast } from "sonner";
 const Page = () => {
 
   const router = useRouter();
-  const [pickupLocation, setPickUpLocation] = useState("");
-  const [dropOffLocation, setDropOffLocation] = useState("");
+  const [pickupLocation, setPickUpLocation] = useState({});
+  const [dropOffLocation, setDropOffLocation] = useState({});
   const [startDate, setStartDate] = useState(null);
   const [timeRange, setTimeRange] = useState({
     fromTime: "",
@@ -44,8 +44,8 @@ const Page = () => {
 
   const handleSubmit = () => {
     const errors = [];
-    if (!pickupLocation?.formatted_address) errors.push("Pickup location");
-    if (!dropOffLocation?.formatted_address) errors.push("Drop-off location");
+    if (!pickupLocation?.fullAddress) errors.push("Pickup location");
+    if (!dropOffLocation?.fullAddress) errors.push("Drop-off location");
     if (!startDate) errors.push("Date");
     if (!timeRange.fromTime || !timeRange.toTime) errors.push("Time range");
   
@@ -55,24 +55,67 @@ const Page = () => {
     }
   
     try {
-      
+      const {
+        fullAddress: pickupFullAddress,
+        apartmentNumber: pickupApartmentNumber,
+        streetNumber: pickupStreetNumber,
+        streetName: pickupStreetName,
+        city: pickupCity,
+        province: pickupProvince,
+        postalCode: pickupPostalCode,
+        country: pickupCountry,
+        location: pickupLoc,
+      } = pickupLocation;
+  
+      const {
+        fullAddress: dropOffFullAddress,
+        apartmentNumber: dropOffApartmentNumber,
+        streetNumber: dropOffStreetNumber,
+        streetName: dropOffStreetName,
+        city: dropOffCity,
+        province: dropOffProvince,
+        postalCode: dropOffPostalCode,
+        country: dropOffCountry,
+        location: dropOffLoc,
+      } = dropOffLocation;
+  
       const moveRequestDetails = {
-        pickupLocation: pickupLocation.formatted_address,
-        dropOffLocation: dropOffLocation.formatted_address,
-        date: startDate.toISOString().split('T')[0],
+        // Pickup
+        pickupFullAddress,
+        pickupApartmentNumber,
+        pickupStreetNumber,
+        pickupStreetName,
+        pickupCity,
+        pickupProvince,
+        pickupPostalCode,
+        pickupCountry,
+        pickupLat: pickupLoc?.lat,
+        pickupLng: pickupLoc?.lng,
+  
+        // Drop-off
+        dropOffFullAddress,
+        dropOffApartmentNumber,
+        dropOffStreetNumber,
+        dropOffStreetName,
+        dropOffCity,
+        dropOffProvince,
+        dropOffPostalCode,
+        dropOffCountry,
+        dropOffLat: dropOffLoc?.lat,
+        dropOffLng: dropOffLoc?.lng,
+  
+        // Other move info
+        date: startDate.toISOString().split("T")[0],
         fromTime: timeRange.fromTime,
         toTime: timeRange.toTime,
         duration: getDurationInHours(timeRange.fromTime, timeRange.toTime),
       };
   
-      const query = new URLSearchParams();
-      Object.entries(moveRequestDetails).forEach(([key, value]) => {
-        if (value) query.append(key, value);
+      const query = new URLSearchParams({
+        move: JSON.stringify(moveRequestDetails),
       });
   
-      const queryString = query.toString();
-     
-      router.push(`/search-movers?${queryString}`);
+      router.push(`/search-movers?${query.toString()}`);
     } catch (error) {
       console.error("Routing error:", error);
       alert("Failed to process your request. Please try again.");
@@ -86,13 +129,13 @@ const Page = () => {
         id="Hero-Section"
         className="flex flex-col-reverse lg:flex-row p-4 my-10 "
       >
-        <div className="flex-1  ">
+        <div className="flex-1 ">
           <div className="grid p-4 gap-4 w-full">
             <h1 className=" w-full lg:w-80 lg:h-16 text-teal-500 text-xl md:text-xl">
               Move anywhere, anytime with TruckIt.
             </h1>
             <p className="text-black/80 leading-8 font-medium lg:mr-12 lg:h-18 text-sm lg:mb-10 md:text-lg lg:pr-2 text-justify">
-              Effortless relocations at your fingertips. Whether you're moving
+              Effortless relocations at your fingertips. Whether you&apos;re moving
               across town or across the country, TruckIt connects you with
               reliable movers to get you there stress-free.
             </p>
@@ -197,7 +240,7 @@ const Page = () => {
           Join Our Network Today!
         </h1>
         <span className="text-black/80 leading-6 font-medium text-sm md:text-base text-justify mb-4 lg:w-1/2">
-          Looking to offer your services? Whether you're a truck driver or a
+          Looking to offer your services? Whether you&apos;re a truck driver or a
           mover, sign up now to connect with customers and grow your business.
         </span>
         <ContinueWithLogin

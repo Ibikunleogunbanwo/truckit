@@ -1,24 +1,52 @@
 "use client";
 
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useEffect } from "react";
 import ReactGoogleAutocomplete from "react-google-autocomplete";
 import Image from "next/image";
 
-const LocationPicker = ({ 
-  placeholder = "Pickup Location", 
+const LocationPicker = ({
+  placeholder = "Pickup Location",
   src = "/logo.png",
   location,
-  onLocationChange
+  onLocationChange,
 }) => {
-  // Memoize autocomplete options to prevent recreation on every render
-  const autocompleteOptions = useMemo(() => ({ 
-    types: ["address"] 
+  const autocompleteOptions = useMemo(() => ({
+    types: ["address"]
   }), []);
 
-  // Memoize the place selection handler
+  // Extract address components from Google Place
+  const extractAddressComponents = (place) => {
+    const getComponent = (type) =>
+      place.address_components?.find(comp => comp.types.includes(type))?.long_name || "";
+
+    return {
+      fullAddress: place.formatted_address || "",
+      apartmentNumber: getComponent("subpremise"),
+      streetNumber: getComponent("street_number"),
+      streetName: getComponent("route"),
+      city: getComponent("locality"),
+      province: getComponent("administrative_area_level_1"),
+      postalCode: getComponent("postal_code"),
+      country: getComponent("country"),
+      location: {
+        lat: place.geometry?.location?.lat(),
+        lng: place.geometry?.location?.lng()
+      }
+    };
+  };
+
   const handlePlaceSelected = useCallback((place) => {
-    onLocationChange(place);
+    if (!place || !place.address_components) return;
+    const parsed = extractAddressComponents(place);
+    onLocationChange(parsed); // Send structured data to parent
   }, [onLocationChange]);
+
+  // On mount, send full object if available
+  useEffect(() => {
+    if (location?.fullAddress) {
+      onLocationChange(location);
+    }
+  }, [location, onLocationChange]);
 
   return (
     <div className="relative w-full">
@@ -38,8 +66,9 @@ const LocationPicker = ({
         onPlaceSelected={handlePlaceSelected}
         options={autocompleteOptions}
         placeholder={placeholder}
-        defaultValue={location || ""}
+        defaultValue={location?.fullAddress || ""}
       />
+
     </div>
   );
 };
