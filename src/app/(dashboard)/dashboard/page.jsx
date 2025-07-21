@@ -2,7 +2,7 @@
 import Image from "next/image";
 import img from "../../../assets/images/Frame (1).png";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useReducer } from "react";
 import DashboardHeader from "@/components/dashboardheader";
 import {
   ChevronDownIcon,
@@ -27,7 +27,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Collapsible } from "@radix-ui/react-collapsible";
 import {
@@ -50,31 +49,57 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-export default function Page() {
-  const [status, setStatus] = useState("confirmed");
-  const [completed, setCompleted] = useState(false);
-  const [cancel, setCancel] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [openSections, setOpenSections] = useState({});
-  const [openCompletion, setOpenCompletion] = useState(false);
-  const [showCompleteDialog, setShowCompleteDialog] = useState(false);
-  const [showCancelDialog, setShowCancelDialog] = useState(false);
+const initialState = {
+  status: "Completed",
+  completed: false,
+  cancel: false,
+  isOpen: false,
+  openSections: {},
+  openCompletion: false,
+  showCompleteDialog: false,
+  showCancelDialog: false,
+};
 
+function reducer(state, action) {
+  switch (action.type) {
+    case "SET_STATUS":
+      return { ...state, status: action.payload };
+    case "MARK_COMPLETED":
+      return { ...state, completed: true, showCompleteDialog: false };
+    case "MARK_CANCELED":
+      return { ...state, cancel: true, showCancelDialog: false };
+    case "TOGGLE_SECTION":
+      return {
+        ...state,
+        openSections: {
+          ...state.openSections,
+          [action.payload]: !state.openSections[action.payload],
+        },
+      };
+    case "SET_OPEN":
+      return { ...state, isOpen: action.payload };
+    case "SET_OPEN_COMPLETION":
+      return { ...state, openCompletion: action.payload };
+    case "TOGGLE_COMPLETE_DIALOG":
+      return { ...state, showCompleteDialog: action.payload };
+    case "TOGGLE_CANCEL_DIALOG":
+      return { ...state, showCancelDialog: action.payload };
+    default:
+      return state;
+  }
+}
+
+export default function Page() {
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const handleCompleted = () => {
-    setCompleted(true);
-    console.log("completed status:", completed);
+    dispatch({ type: "MARK_COMPLETED" });
     toast.success("Move has been completed");
   };
 
   const handleCancel = () => {
-    setCancel(true);
-    console.log("Cancel status:", cancel);
+    dispatch({ type: "MARK_CANCELED" });
     toast.error("Move has been Cancelled Successfully");
-  };
-
-  const toggleSection = (key) => {
-    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const accordionData = [
@@ -83,7 +108,6 @@ export default function Page() {
       label: "Items to be moved",
       content: <div className="text-sm text-gray-70 rounded-md p-4"></div>,
     },
-
     {
       value: "accessibility",
       label: "Accessibility & Logistics",
@@ -104,7 +128,6 @@ export default function Page() {
         </div>
       ),
     },
-
     {
       value: "movers",
       label: "Movers & Assistance",
@@ -133,7 +156,6 @@ export default function Page() {
         </div>
       ),
     },
-
     {
       value: "contact",
       label: "Contact Information",
@@ -162,12 +184,12 @@ export default function Page() {
 
   return (
     <div className="w-full md:mt-22">
-         <div className="md:mt-4 fixed top-0 z-50">
+      <div className="md:mt-4 fixed top-0 z-50">
         <DashboardHeader />
       </div>
 
       <div className="flex h-screen">
-        <div className=" py-4 px-6 mb-4 mt-5 w-full">
+        <div className="py-4 px-6 mb-4 mt-5 w-full">
           <div className="flex gap-2 px-5">
             <p className="text-xs text-black font-bold ">Good Morning, </p>
             <div className="flex gap-2">
@@ -205,9 +227,11 @@ export default function Page() {
                 <div className="flex items-center justify-center p-0.5 rounded border-gray-200 h-12 border-1 gap-0">
                   <Button
                     type="button"
-                    onClick={() => setStatus("confirmed")}
+                    onClick={() =>
+                      dispatch({ type: "SET_STATUS", payload: "Completed" })
+                    }
                     className={`text-xs font-semibold border-none rounded focus:outline-none focus:ring-2 focus:ring-white ${
-                      status === "confirmed"
+                      state.status === "Completed"
                         ? "bg-black text-white"
                         : "bg-gray-200 text-black"
                     }`}
@@ -216,9 +240,11 @@ export default function Page() {
                   </Button>
                   <Button
                     type="button"
-                    onClick={() => setStatus("pending")}
+                    onClick={() =>
+                      dispatch({ type: "SET_STATUS", payload: "pending" })
+                    }
                     className={`text-xs font-semibold border-none rounded focus:outline-none focus:ring-2 focus:ring-white ${
-                      status === "pending"
+                      state.status === "pending"
                         ? "bg-black text-white"
                         : "bg-gray-200 text-black"
                     }`}
@@ -241,24 +267,37 @@ export default function Page() {
                   {/* Confirmed and Drop down Menu */}
                   <div className="flex items-center">
                     <p className="text-green-500 text-xs lg:text-sm lg:font-semibold">
-                      Confirmed
+                      Completed
                     </p>
 
-                    <DropdownMenu open={openCompletion} onOpenChange={setOpenCompletion}>
+                    <DropdownMenu
+                      open={state.openCompletion}
+                      onOpenChange={(val) =>
+                        dispatch({ type: "SET_OPEN_COMPLETION", payload: val })
+                      }
+                    >
                       <DropdownMenuTrigger asChild>
                         <Button aria-label="Open menu">
-                          <EllipsisVertical className="text-teal-500 bg-teal-100 size-4" />
+                          <EllipsisVertical className="text-teal-500 bg-teal-100 size-6" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem onSelect={() => setShowCompleteDialog(true)}>
+                        <DropdownMenuItem
+                          onSelect={() =>
+                            dispatch({ type: "TOGGLE_COMPLETE_DIALOG", payload: true })
+                          }
+                        >
                           <div className="flex gap-2 py-2 items-center text-sm cursor-pointer w-full">
                             <CircleCheck />
                             Mark move as completed
                           </div>
                         </DropdownMenuItem>
 
-                        <DropdownMenuItem onSelect={() => setShowCancelDialog(true)}>
+                        <DropdownMenuItem
+                          onSelect={() =>
+                            dispatch({ type: "TOGGLE_CANCEL_DIALOG", payload: true })
+                          }
+                        >
                           <div className="flex gap-2 items-center py-2 text-sm text-red-500 cursor-pointer w-full">
                             <CircleX />
                             Cancel appointment
@@ -266,48 +305,61 @@ export default function Page() {
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  
-                    <AlertDialog open={showCompleteDialog} onOpenChange={setShowCompleteDialog}>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Mark move as completed?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This action cannot be undone. Are you sure you want to Mark move as completed?
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Go back</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleCompleted}>
-                              Yes, complete move.
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
 
-                      {/* Cancel Appointment Dialog */}
-                      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Cancel this move?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This action cannot be undone. 
-                              Are you sure you want to cancel this move request?
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Go back</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleCancel}>
-                              Yes, cancel cancel move request.
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                    <AlertDialog
+                      open={state.showCompleteDialog}
+                      onOpenChange={(val) =>
+                        dispatch({ type: "TOGGLE_COMPLETE_DIALOG", payload: val })
+                      }
+                    >
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Mark move as completed?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. Are you sure you want to Mark
+                            move as completed?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Go back</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleCompleted}>
+                            Yes, complete move.
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
 
-                    </div>
-                    </div>
+                    {/* Cancel Appointment Dialog */}
+                    <AlertDialog
+                      open={state.showCancelDialog}
+                      onOpenChange={(val) =>
+                        dispatch({ type: "TOGGLE_CANCEL_DIALOG", payload: val })
+                      }
+                    >
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Cancel this move?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. Are you sure you want to cancel
+                            this move request?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Go back</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleCancel}>
+                            Yes, cancel cancel move request.
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
 
                 {/* Move Details */}
-                <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+                <Collapsible
+                  open={state.isOpen}
+                  onOpenChange={(val) => dispatch({ type: "SET_OPEN", payload: val })}
+                >
                   {/* DIv for address and chevron */}
                   <div id="outer" className="py-6 w-full">
                     {/* INNER ROW: Address + Chevron */}
@@ -326,7 +378,6 @@ export default function Page() {
                             To:{" "}
                             <span className="text-gray-400 text-xs lg:text-sm">
                               456 Wood Street, Toronto
-                            
                             </span>
                           </span>
                         </p>
@@ -335,7 +386,7 @@ export default function Page() {
                       {/* Chevron Button (Trigger) */}
                       <CollapsibleTrigger asChild>
                         <button className=" border border-gray-300 rounded-md bg-white shadow-sm">
-                          {isOpen ? <ChevronDownIcon /> : <ChevronUpIcon />}
+                          {state.isOpen ? <ChevronDownIcon /> : <ChevronUpIcon />}
                         </button>
                       </CollapsibleTrigger>
                     </div>
@@ -385,9 +436,7 @@ export default function Page() {
                                     <TableCell className="text-start px-2">
                                       Dinning Table
                                     </TableCell>
-                                    <TableCell className="text-start px-2">
-                                      2
-                                    </TableCell>
+                                    <TableCell className="text-start px-2">2</TableCell>
                                     <TableCell className="text-start px-2">
                                       No instruction added...
                                     </TableCell>
@@ -398,11 +447,7 @@ export default function Page() {
                           </TabsContent>
 
                           {accordionData.map(({ value, content }) => (
-                            <TabsContent
-                              key={value}
-                              value={value}
-                              className="mt-2 bg-white"
-                            >
+                            <TabsContent key={value} value={value} className="mt-2 bg-white">
                               {content}
                             </TabsContent>
                           ))}
@@ -433,9 +478,7 @@ export default function Page() {
                                         <th className="px-2 py-2 w-1/4 font-bold">
                                           Item
                                         </th>
-                                        <th className="px-2 py-2 w-1/6 font-bold">
-                                          Qty
-                                        </th>
+                                        <th className="px-2 py-2 w-1/6 font-bold">Qty</th>
                                         <th className="px-2 py-2 w-1/3 font-bold">
                                           Special Instructions
                                         </th>
@@ -443,12 +486,8 @@ export default function Page() {
                                     </thead>
                                     <tbody>
                                       <tr className="border-t">
-                                        <td className="px-2 py-2 break-words">
-                                          Furniture
-                                        </td>
-                                        <td className="px-2 py-2 break-words">
-                                          Dinning Table
-                                        </td>
+                                        <td className="px-2 py-2 break-words">Furniture</td>
+                                        <td className="px-2 py-2 break-words">Dinning Table</td>
                                         <td className="px-2 py-2">2</td>
                                         <td className="px-2 py-2 break-words text-xs text-gray-600">
                                           No instruction added...
@@ -460,6 +499,7 @@ export default function Page() {
                               </div>
                             </AccordionContent>
                           </AccordionItem>
+
                           <AccordionItem value="item-2">
                             <AccordionTrigger className="font-bold">
                               Accessibility & Logistics
@@ -474,9 +514,7 @@ export default function Page() {
                                 <p className="text-xs py-2">Elevator</p>
                               </div>
                               <div className="sm:col-span-2 lg:col-span-1">
-                                <p className="font-bold">
-                                  Parking instructions:
-                                </p>
+                                <p className="font-bold">Parking instructions:</p>
                                 <p className="text-xs py-2">
                                   No Parking Instruction added.
                                 </p>
@@ -502,9 +540,7 @@ export default function Page() {
                               </div>
                               <div>
                                 <p className="font-bold">Equipment Required:</p>
-                                <p className="text-xs py-2">
-                                  No Equipment added.
-                                </p>
+                                <p className="text-xs py-2">No Equipment added.</p>
                               </div>
                               <div>
                                 <p className="font-bold">Truck Type:</p>
@@ -519,22 +555,20 @@ export default function Page() {
                             </AccordionTrigger>
                             <AccordionContent className="flex flex-col gap-4 text-balance">
                               <div>
-                                <div>
-                                  <p className="font-bold">First Name:</p>
-                                  <p className="text-xs py-2">Ayo</p>
-                                </div>
-                                <div>
-                                  <p className="font-bold">Last Name:</p>
-                                  <p className="text-xs py-2">John</p>
-                                </div>
-                                <div>
-                                  <p className="font-bold">Phone Number:</p>
-                                  <p className="text-xs py-2">6393640945</p>
-                                </div>
-                                <div>
-                                  <p className="font-bold">Email:</p>
-                                  <p className="text-xs py-2">Ayo@gmail.com</p>
-                                </div>
+                                <p className="font-bold">First Name:</p>
+                                <p className="text-xs py-2">Ayo</p>
+                              </div>
+                              <div>
+                                <p className="font-bold">Last Name:</p>
+                                <p className="text-xs py-2">John</p>
+                              </div>
+                              <div>
+                                <p className="font-bold">Phone Number:</p>
+                                <p className="text-xs py-2">6393640945</p>
+                              </div>
+                              <div>
+                                <p className="font-bold">Email:</p>
+                                <p className="text-xs py-2">Ayo@gmail.com</p>
                               </div>
                             </AccordionContent>
                           </AccordionItem>
@@ -543,8 +577,6 @@ export default function Page() {
                     </div>
                   </CollapsibleContent>
                 </Collapsible>
-
-
               </div>
             </div>
           </div>
