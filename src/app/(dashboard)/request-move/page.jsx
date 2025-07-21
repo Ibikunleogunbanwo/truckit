@@ -3,7 +3,7 @@ import DashboardHeader from '@/components/dashboardheader'
 import MyDatePicker from '@/components/landingpage/datepicker'
 import Locationpicker from '@/components/landingpage/locationpicker'
 import TimeRangeSelector from '@/components/landingpage/timepicker'
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import pickup from "../../../assets/images/img-location.png";
 import dropoff from "../../../assets/images/img-dropoff.png";
@@ -16,18 +16,22 @@ import ContactInfo from "@/components/search-movers/contactinfo";
 import ContinueWithLogin from "@/components/landingpage/button";
 import SubmissionModal from "@/components/modal";
 import { Toaster, toast } from "sonner";
+import haversine from 'haversine';
 
 
 
 const RequestMove = () => {
 
-    const [pickupLocation, setPickUpLocation] = useState("");
-    const [dropOffLocation, setDropOffLocation] = useState("");
+    const [pickupLocation, setPickUpLocation] = useState({});
+    const [dropOffLocation, setDropOffLocation] = useState({});
+
     const [startDate, setStartDate] = useState(null);
     const [timeRange, setTimeRange] = useState({
         fromTime: "",
         toTime: "",
       });
+
+
     const [accessibilityData, setAccessibilityData] = useState(null);
     const [items, setItems] = useState([]);
     const [isChecked, setIsChecked] = useState(false);
@@ -39,11 +43,9 @@ const RequestMove = () => {
           NoofMovers: "",
           equipmentRequired: "",
         });
-      
-   
     const [contactInfo, setContactInfo] = useState(null);
 
-
+   
   
     function getDurationInHours(fromTime, toTime) {
       const [fromHour, fromMinute] = fromTime.split(":").map(Number);
@@ -57,99 +59,125 @@ const RequestMove = () => {
     
       return `${durationHours} hrs`;
     }
-
-    const moveRequestDetails = {
-      pickupLocation: pickupLocation.formatted_address,
-      dropOffLocation: dropOffLocation.formatted_address,
-      date: startDate,
-      fromTime: timeRange.fromTime,
-      toTime: timeRange.toTime,
-      duration: getDurationInHours(timeRange.fromTime, timeRange.toTime),
-    };
-
-
-    const handleMovedetails = () => {
-      const errors = [];
-      if (!pickupLocation?.formatted_address) errors.push("Pickup location");
-      if (!dropOffLocation?.formatted_address) errors.push("Drop-off location");
-      if (!startDate) errors.push("Date");
-      if (!timeRange.fromTime || !timeRange.toTime) errors.push("Time range");
     
-      if (errors.length > 0) {
-        toast.error(`Please fill in: ${errors.join(", ")}`);
-        return;
+      
+      const RequestDetails = {
+        PickupLocation: {
+          fullAddress: pickupLocation.fullAddress || "",
+          apartmentNumber: pickupLocation.apartmentNumber || "",
+          streetNumber:  pickupLocation.streetNumber || "",
+          streetName:  pickupLocation.streetName || "",
+          city:  pickupLocation.city || "",
+          province:  pickupLocation.province || "",
+          postalCode:  pickupLocation.postalCode || "",
+          country:  pickupLocation.country || "",
+          latitude:  pickupLocation.location?.lat || "",
+          longitude:  pickupLocation.location?.lng || "",
+        },
+
+        DropOffLocation: {
+          fullAddress: dropOffLocation.fullAddress || "",
+          apartmentNumber: dropOffLocation.apartmentNumber || "",
+          streetNumber: dropOffLocation.streetNumber || "",
+          streetName: dropOffLocation.streetName || "",
+          city: dropOffLocation.city || "",
+          province: dropOffLocation.province || "",
+          postalCode: dropOffLocation.postalCode || "",
+          country: dropOffLocation.country || "",
+          latitude: dropOffLocation.location?.lat || "",
+          longitude: dropOffLocation.location?.lng || "",
+        },
+        Date: startDate || "Not selected",
+        FromTime: timeRange.fromTime || "00:00",
+        ToTime: timeRange.toTime || "00:00",
+        Duration: getDurationInHours(timeRange.fromTime,timeRange.toTime)
+      };
+    
+
+      
+      const start = pickupLocation.location
+      ? { latitude: pickupLocation.location.lat, longitude: pickupLocation.location.lng }
+      : null;
+  
+    const end = dropOffLocation.location
+      ? { latitude: dropOffLocation.location.lat, longitude: dropOffLocation.location.lng }
+      : null;
+  
+    const distance = useMemo(() => {
+      if (start && end) {
+        return haversine(start, end).toFixed(2);
       }
+      return "N/A";
+    }, [start, end]);
+
+
     
-    };
-
-
-    const handleValidContactChange = (validDataOrNull) => {
-      setContactInfo(validDataOrNull);
-    };
-  
-
-
-const handleSubmit = () => {
-    const generateRequestId = (length = 10) => {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      return Array.from(crypto.getRandomValues(new Uint8Array(length)))
-        .map((byte) => chars[byte % chars.length])
-        .join('');
-    };
-  
-    const requestId = generateRequestId();
-  
-    const formData = {
-      requestId:generateRequestId(),
-      moveRequestDetails,
-      accessibility: accessibilityData,
-      items,
-      movers: moversDetails,
-      contact: contactInfo,
-      agreedToTerms: isChecked,
-    };
-  
-    if (!formData.items || formData.items.length === 0) {
-      toast("Please select at least one Category & Sub category.");
-      return;
-    }
-  
-    if (
-      !formData.accessibility ||
-      Object.keys(formData.accessibility).length === 0
-    ) {
-      toast.error("Please fill out accessibility information.");
-      return;
-    }
-  
-    if (
-      String(formData.movers.Vehicleneedeed).trim() === "" ||
-      String(formData.movers.NoofMovers).trim() === ""
-    ) {
-      toast.error("Please fill out truck type and movers needed information.");
-      return;
-    }
-  
-    if (!contactInfo) {
-      toast.error("Please fix errors before submitting.");
-      return;
-    }
-  
-    if (!formData.agreedToTerms) {
-      toast.error("Please agree to the terms before submitting.");
-      return;
-    }
-  
-    console.log("Submitting form data:", formData);
-    toast.success("Your request has been submitted");
+      const handleValidContactChange = (validDataOrNull) => {
+        setContactInfo(validDataOrNull);
+      };
     
-  
-    // fetch('/api/submit', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(formData)
-    // });
-  };
+      const handleSubmit = () => {
+        const generateRequestId = (length = 10) => {
+          const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+          return Array.from(crypto.getRandomValues(new Uint8Array(length)))
+            .map((byte) => chars[byte % chars.length])
+            .join('');
+        };
+      
+        const requestId = generateRequestId();
+      
+        const formData = {
+          requestId:generateRequestId(),
+          request_details: RequestDetails,
+          accessibility_details: accessibilityData,
+          move_items: items,
+          movers_requirements: moversDetails,
+          move__contacts: contactInfo,
+          agreedToTerms: isChecked,
+          move_distance: distance,
+        };
+      
+    
+        console.log(pickupLocation)
+    
+        if (!items || items.length === 0) {
+          toast("Please select at least one Category & Sub category.");
+          return;
+        }
+      
+        if (!accessibilityData || Object.keys(accessibilityData).length === 0) {
+          toast.error("Please fill out accessibility information.");
+          return;
+        }
+      
+        if (
+          !moversDetails?.Vehicleneedeed?.trim() ||
+          !Number(moversDetails?.NoofMovers) ||
+          Number(moversDetails?.NoofMovers) <= 0
+        )
+      
+        if (!contactInfo || Object.keys(contactInfo).length === 0) {
+          toast.error("Please fill out contact information.");
+          return;
+        }
+      
+        if (!isChecked) {
+          toast.error("Please agree to the terms before submitting.");
+          return;
+        }
+      
+        console.log("Submitting form data:", formData);
+        toast.success("Your request has been submitted");
+        
+       
+      
+        // fetch('/api/submit', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify(formData)
+        // });
+      };
+    
 
   return (
     <div className="w-full mt-14 md:mt-22">

@@ -200,7 +200,7 @@ export default function Page() {
             <div className="flex flex-col">
               <div className="border-1 border-gray-300 h-24 md:h-16 p-2 rounded-t-md items-center flex flex-col md:flex-row justify-between md:p-4">
                 <p className="font-montserrat font-bold text-sm leading-6 tracking-normal">
-                  Upcoming Moves
+                  Recent Moves
                 </p>
                 <div className="flex items-center justify-center p-0.5 rounded border-gray-200 h-12 border-1 gap-0">
                   <Button
@@ -212,7 +212,7 @@ export default function Page() {
                         : "bg-gray-200 text-black"
                     }`}
                   >
-                    Confirmed
+                    Completed
                   </Button>
                   <Button
                     type="button"

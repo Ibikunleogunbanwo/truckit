@@ -11,6 +11,7 @@ import ContinueWithLogin from "@/components/landingpage/button";
 import SubmissionModal from "@/components/modal";
 import { Toaster, toast } from "sonner";
 import { useSearchParams } from "next/navigation";
+import haversine from 'haversine';
 
 const Searchmovers = () => {
   const [accessibilityData, setAccessibilityData] = useState(null);
@@ -84,6 +85,30 @@ const Searchmovers = () => {
   };
 
 
+  const start = parsedMove.pickupLat && parsedMove.pickupLng
+  ? {
+      latitude: parseFloat(parsedMove.pickupLat),
+      longitude: parseFloat(parsedMove.pickupLng),
+    }
+  : null;
+
+const end = parsedMove.dropOffLat && parsedMove.dropOffLng
+  ? {
+      latitude: parseFloat(parsedMove.dropOffLat),
+      longitude: parseFloat(parsedMove.dropOffLng),
+    }
+  : null;
+    
+  const distance = useMemo(() => {
+    if (start && end) {
+      return haversine(start, end).toFixed(2);
+    }
+    return "N/A";
+  }, [start, end]);
+
+
+
+
   const handleValidContactChange = (validDataOrNull) => {
     setContactInfo(validDataOrNull);
   };
@@ -106,6 +131,7 @@ const Searchmovers = () => {
       movers_requirements: moversDetails,
       move__contacts: contactInfo,
       agreedToTerms: isChecked,
+      move_distance: distance,
     };
   
     console.log(moversDetails)
