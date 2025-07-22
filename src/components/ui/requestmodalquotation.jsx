@@ -26,6 +26,9 @@ const RequestModalQuotation = ({
   onQuoteChevronClick = () => {},
   setPreviousModalOpen = () => {},
   isLoading = false,
+  // New props for AcceptQuotation modal
+  setIsOpenAcceptQuotation = () => {},
+  onConfirmMove = () => {}, // Optional callback when confirm is clicked
 }) => {
   const router = useRouter();
 
@@ -33,12 +36,18 @@ const RequestModalQuotation = ({
     if (isLoading) return;
     
     try {
+      // Close this modal and open AcceptQuotation modal
       setIsOpen(false);
-      if (redirectto) {
-        await router.push(redirectto);
+      setIsOpenAcceptQuotation(true);
+      
+      // Call optional callback
+      if (typeof onConfirmMove === "function") {
+        onConfirmMove();
       }
+      
+      // Note: We don't navigate here anymore since AcceptQuotation will handle it
     } catch (error) {
-      console.error("Navigation error:", error);
+      console.error("Modal transition error:", error);
       // Could add error handling/toast notification here
     }
   };
@@ -154,7 +163,7 @@ const RequestModalQuotation = ({
               onClick={handleProceed}
               disabled={isLoading}
               className="flex-1 bg-teal-500 text-white py-3 px-4 rounded-lg text-sm font-medium hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Confirm and proceed with this moving quotation"
+              aria-label="Confirm and proceed to acceptance modal"
             >
               {isLoading ? "Processing..." : "Confirm Move"}
             </button>

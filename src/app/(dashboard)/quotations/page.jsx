@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import DashboardHeader from "@/components/dashboardheader";
 import RequestModal from "@/components/requestmodal";
 import RequestModalQuotation from "@/components/ui/requestmodalquotation";
-
+import AcceptQuotation from "@/components/acceptrequest";
 const Page = () => {
   const movedetails_quotation = [
     {
@@ -138,11 +138,12 @@ const Page = () => {
     }
   ];
 
-  // Modal states
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [isQuoteDetailModalOpen, setIsQuoteDetailModalOpen] = useState(false);
+  const [isAcceptQuotationOpen, setIsAcceptQuotationOpen] = useState(false); // New state
   const [selectedQuote, setSelectedQuote] = useState(null);
   const [currentMoveDetails, setCurrentMoveDetails] = useState(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   // Open the RequestModal when user clicks "View responses"
   const handleClickResponse = (moveDetails) => {
@@ -163,16 +164,63 @@ const Page = () => {
     setTimeout(() => setIsRequestModalOpen(true), 200);
   };
 
+  // Handle "Confirm Move" button in RequestModalQuotation
+  const handleConfirmMove = () => {
+    console.log("Moving to AcceptQuotation modal for:", selectedQuote?.name);
+    // Additional logic if needed before opening AcceptQuotation
+  };
+
+  // Handle back navigation from AcceptQuotation to RequestModalQuotation
+  const handleBackToQuoteDetail = () => {
+    setIsAcceptQuotationOpen(false);
+    setTimeout(() => setIsQuoteDetailModalOpen(true), 200);
+  };
+
+  // Handle final payment processing
+  const handleFinalConfirmation = async () => {
+    setIsProcessingPayment(true);
+    try {
+      // Simulate payment processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log("Payment successful for:", selectedQuote?.name);
+      
+      // Close all modals and reset state
+      handleCloseAllModals();
+      
+      // You could show a success message here
+      alert("Move confirmed successfully!");
+    } catch (error) {
+      console.error("Payment failed:", error);
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  // Handle error in payment process
+  const handlePaymentError = (error) => {
+    console.error("Payment error:", error);
+    // You could show an error toast here
+    alert("Payment failed. Please try again.");
+  };
+
   // Handle closing all modals
   const handleCloseAllModals = () => {
     setIsRequestModalOpen(false);
     setIsQuoteDetailModalOpen(false);
+    setIsAcceptQuotationOpen(false);
     setSelectedQuote(null);
     setCurrentMoveDetails(null);
+    setIsProcessingPayment(false);
+  };
+
+  // Get other quotes for comparison (exclude selected quote)
+  const getOtherQuotes = () => {
+    if (!currentMoveDetails || !selectedQuote) return [];
+    return currentMoveDetails.quotes.filter(quote => quote.id !== selectedQuote.id);
   };
 
   return (
-    <div className="w-full min-h-screen bg-gray-50">
+    <div className="w-full min-h-screen bg-white">
       {/* Fixed header */}
       <div className="fixed top-0 z-50 w-full">
         <DashboardHeader />
@@ -294,12 +342,37 @@ const Page = () => {
           distance={selectedQuote.distance_covered || selectedQuote.distance || "N/A"}
           jobs={selectedQuote.jobs || "N/A"}
           price={selectedQuote.price || "N/A"}
-          quotes={[]}
+          quotes={[]} // No quotes needed in detail view
           onChevronClickBack={handleBackToQuoteList}
           setPreviousModalOpen={setIsRequestModalOpen}
           onQuoteChevronClick={(quote) => {
             console.log("Clicked quote in detail modal:", quote);
           }}
+          // New props for AcceptQuotation integration
+          setIsOpenAcceptQuotation={setIsAcceptQuotationOpen}
+          onConfirmMove={handleConfirmMove}
+        />
+      )}
+
+    
+      {selectedQuote && currentMoveDetails && (
+        <AcceptQuotation
+          isOpenRequestQuotationModal={isQuoteDetailModalOpen}
+          setIsOpenRequestQuotationModal={setIsQuoteDetailModalOpen}
+          isOpenAcceptQuotation={isAcceptQuotationOpen}
+          setIsOpenAcceptQuotation={setIsAcceptQuotationOpen}
+          redirectto="/dashboard/confirmed" // Redirect after successful payment
+          truck_type={selectedQuote.truck_type || "Unknown Truck"}
+          distance={selectedQuote.distance_covered || selectedQuote.distance || "N/A"}
+          jobs={selectedQuote.jobs?.toString() || "N/A"}
+          price={selectedQuote.price || "N/A"}
+          moverName={selectedQuote.name || "Unknown Mover"}
+          fromAddress={currentMoveDetails.from}
+          toAddress={currentMoveDetails.to}
+          onChevronClickBack={handleBackToQuoteDetail}
+          setPreviousModalOpen={setIsQuoteDetailModalOpen}
+          onError={handlePaymentError}
+          isLoading={isProcessingPayment}
         />
       )}
     </div>

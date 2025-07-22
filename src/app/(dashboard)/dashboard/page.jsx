@@ -49,6 +49,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
+// Initial state
 const initialState = {
   status: "Completed",
   completed: false,
@@ -60,6 +61,88 @@ const initialState = {
   showCancelDialog: false,
 };
 
+// Accordion data
+const accordionData = [
+  {
+    value: "items",
+    label: "Items to be moved",
+    content: <div className="text-sm text-gray-70 rounded-md p-4"></div>,
+  },
+  {
+    value: "accessibility",
+    label: "Accessibility & Logistics",
+    content: (
+      <div className="grid grid-cols-3 text-sm text-gray-700 rounded-md ml-2">
+        <div>
+          <p className="font-bold">Building type:</p>
+          <p className="text-xs py-2">Apartment</p>
+        </div>
+        <div>
+          <p className="font-bold">Building access:</p>
+          <p className="text-xs py-2">Elevator</p>
+        </div>
+        <div className="sm:col-span-2 lg:col-span-1">
+          <p className="font-bold">Parking instructions:</p>
+          <p className="text-xs py-2">No Parking Instruction added.</p>
+        </div>
+      </div>
+    ),
+  },
+  {
+    value: "movers",
+    label: "Movers & Assistance",
+    content: (
+      <div className="grid lg:grid-cols-5 gap-4 text-sm text-gray-700 rounded-md ml-2">
+        <div>
+          <p className="font-bold">Driver:</p>
+          <p className="text-xs py-2">Yes</p>
+        </div>
+        <div>
+          <p className="font-bold">Movers:</p>
+          <p className="text-xs py-2">6</p>
+        </div>
+        <div>
+          <p className="font-bold">Unload Needed:</p>
+          <p className="text-xs py-2">No</p>
+        </div>
+        <div>
+          <p className="font-bold">Equipment Required:</p>
+          <p className="text-xs py-2">No Equipment added.</p>
+        </div>
+        <div>
+          <p className="font-bold">Truck Type:</p>
+          <p className="text-xs py-2">Caravan</p>
+        </div>
+      </div>
+    ),
+  },
+  {
+    value: "contact",
+    label: "Contact Information",
+    content: (
+      <div className="grid grid-cols-5 gap-4 text-sm text-gray-700 rounded-md ml-2">
+        <div>
+          <p className="font-bold">First Name:</p>
+          <p className="text-xs py-2">Ayo</p>
+        </div>
+        <div>
+          <p className="font-bold">Last Name:</p>
+          <p className="text-xs py-2">John</p>
+        </div>
+        <div>
+          <p className="font-bold">Phone Number:</p>
+          <p className="text-xs py-2">6393640945</p>
+        </div>
+        <div>
+          <p className="font-bold">Email:</p>
+          <p className="text-xs py-2">Ayo@gmail.com</p>
+        </div>
+      </div>
+    ),
+  },
+];
+
+// Reducer function
 function reducer(state, action) {
   switch (action.type) {
     case "SET_STATUS":
@@ -89,7 +172,106 @@ function reducer(state, action) {
   }
 }
 
-export default function Page() {
+// Reusable Components
+const StatsCard = ({ title, value }) => (
+  <div className="bg-white h-24 rounded-xl border border-gray-300 p-4 place-content-center">
+    <p className="mb-2 text-xs">{title}</p>
+    <p className="font-bold text-lg">{value}</p>
+  </div>
+);
+
+const StatusButton = ({ status, currentStatus, onClick }) => (
+  <Button
+    type="button"
+    onClick={onClick}
+    className={`text-xs font-semibold border-none rounded focus:outline-none focus:ring-2 focus:ring-white ${
+      currentStatus === status ? "bg-black text-white" : "bg-gray-200 text-black"
+    }`}
+  >
+    {status}
+  </Button>
+);
+
+const ItemsTable = ({ isMobile = false }) => {
+  if (isMobile) {
+    return (
+      <div className="w-full mt-4 rounded-xl border border-gray-300 overflow-hidden">
+        <div className="w-full overflow-x-auto">
+          <table className="min-w-full text-sm table-fixed">
+            <thead className="bg-gray-200 text-left sticky top-0 z-10">
+              <tr>
+                <th className="px-2 py-2 w-1/4 font-bold">Category</th>
+                <th className="px-2 py-2 w-1/4 font-bold">Item</th>
+                <th className="px-2 py-2 w-1/6 font-bold">Qty</th>
+                <th className="px-2 py-2 w-1/3 font-bold">Special Instructions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-t">
+                <td className="px-2 py-2 break-words">Furniture</td>
+                <td className="px-2 py-2 break-words">Dinning Table</td>
+                <td className="px-2 py-2">2</td>
+                <td className="px-2 py-2 break-words text-xs text-gray-600">
+                  No instruction added...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-x-auto rounded-t-xl border border-gray-300 mt-4">
+      <Table className="min-w-full border-collapse table-auto">
+        <TableHeader className="sticky top-0 z-10">
+          <TableRow className="bg-gray-200">
+            <TableHead className="text-sm font-bold text-start px-2">Category</TableHead>
+            <TableHead className="text-sm font-bold text-start px-2">Item</TableHead>
+            <TableHead className="text-sm font-bold text-start px-2">Quantity</TableHead>
+            <TableHead className="w-[500px] text-sm font-bold text-start px-2">
+              Special Handling Instruction
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow>
+            <TableCell className="text-start px-2">Furniture</TableCell>
+            <TableCell className="text-start px-2">Dinning Table</TableCell>
+            <TableCell className="text-start px-2">2</TableCell>
+            <TableCell className="text-start px-2">No instruction added...</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
+
+const ConfirmationDialog = ({
+  open,
+  onOpenChange,
+  title,
+  description,
+  confirmText,
+  onConfirm
+}) => (
+  <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>{title}</AlertDialogTitle>
+        <AlertDialogDescription>{description}</AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>Go back</AlertDialogCancel>
+        <AlertDialogAction onClick={onConfirm}>{confirmText}</AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+);
+
+// Main Component
+export default function DashboardPage() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const handleCompleted = () => {
@@ -102,160 +284,60 @@ export default function Page() {
     toast.error("Move has been Cancelled Successfully");
   };
 
-  const accordionData = [
-    {
-      value: "items",
-      label: "Items to be moved",
-      content: <div className="text-sm text-gray-70 rounded-md p-4"></div>,
-    },
-    {
-      value: "accessibility",
-      label: "Accessibility & Logistics",
-      content: (
-        <div className="grid grid-cols-3 text-sm text-gray-700 rounded-md ml-2">
-          <div>
-            <p className="font-bold">Building type:</p>
-            <p className="text-xs py-2">Apartment</p>
-          </div>
-          <div>
-            <p className="font-bold ">Building access:</p>
-            <p className="text-xs py-2">Elevator</p>
-          </div>
-          <div className="sm:col-span-2 lg:col-span-1">
-            <p className="font-bold">Parking instructions:</p>
-            <p className="text-xs py-2">No Parking Instruction added.</p>
-          </div>
-        </div>
-      ),
-    },
-    {
-      value: "movers",
-      label: "Movers & Assistance",
-      content: (
-        <div className="grid lg:grid-cols-5 gap-4 text-sm text-gray-700 rounded-md ml-2">
-          <div>
-            <p className="font-bold">Driver:</p>
-            <p className="text-xs py-2">Yes</p>
-          </div>
-          <div>
-            <p className="font-bold">Movers:</p>
-            <p className="text-xs py-2">6</p>
-          </div>
-          <div>
-            <p className="font-bold">Unload Needed:</p>
-            <p className="text-xs py-2">No</p>
-          </div>
-          <div>
-            <p className="font-bold">Equipment Required:</p>
-            <p className="text-xs py-2">No Equipment added.</p>
-          </div>
-          <div>
-            <p className="font-bold">Truck Type:</p>
-            <p className="text-xs py-2">Caravan</p>
-          </div>
-        </div>
-      ),
-    },
-    {
-      value: "contact",
-      label: "Contact Information",
-      content: (
-        <div className="grid grid-cols-5 gap-4 text-sm text-gray-700 rounded-md ml-2">
-          <div>
-            <p className="font-bold">First Name:</p>
-            <p className="text-xs py-2">Ayo</p>
-          </div>
-          <div>
-            <p className="font-bold">Last Name:</p>
-            <p className="text-xs py-2">John</p>
-          </div>
-          <div>
-            <p className="font-bold">Phone Number:</p>
-            <p className="text-xs py-2">6393640945</p>
-          </div>
-          <div>
-            <p className="font-bold">Email:</p>
-            <p className="text-xs py-2">Ayo@gmail.com</p>
-          </div>
-        </div>
-      ),
-    },
-  ];
-
   return (
-    <div className="w-full md:mt-22">
+    <div className="w-full min-h-screen md:mt-22">
       <div className="md:mt-4 fixed top-0 z-50">
         <DashboardHeader />
       </div>
 
       <div className="flex h-screen">
-        <div className="py-4 px-6 mb-4 mt-5 w-full">
+        <div className="py-10 md:py-6 px-6 mb-4 md:mb-0 mt-5 w-full">
+          {/* Greeting Section */}
           <div className="flex gap-2 px-5">
-            <p className="text-xs text-black font-bold ">Good Morning, </p>
+            <p className="text-xs text-black font-bold">Good Morning, </p>
             <div className="flex gap-2">
-              <span className="text-xs text-gray-400">Abdulrahman </span>{" "}
-              <Image src={img} alt="sunimage" height={20} width={20} />
+              <span className="text-xs text-gray-400">Abdulrahman </span>
+              <Image src={img} alt="sun image" height={20} width={20} />
             </div>
           </div>
 
+          {/* Main Content */}
           <div className="flex flex-1 flex-col gap-4 md:p-4 pt-6 w-full">
-            <div className="grid gap-4 md:grid-cols-4 w-full ">
-              <div className="bg-white h-24 rounded-xl border-1 border-gray-300 p-4 place-content-center">
-                <p className="mb-2 text-xs">Total moves:</p>
-                <p className="font-bold text-lg">32</p>
-              </div>
-              <div className="bg-white h-24 rounded-xl border-1 border-gray-300 p-4 place-content-center">
-                <p className="mb-2 text-xs">Upcoming moves:</p>
-                <p className="font-bold text-lg">32</p>
-              </div>
-              <div className="bg-white h-24 rounded-xl border-1 border-gray-300 p-4 place-content-center">
-                <p className="mb-2 text-xs">Completed moves:</p>
-                <p className="font-bold text-lg">32</p>
-              </div>
-              <div className="bg-white h-24 rounded-xl border-1 border-gray-300 p-4 place-content-center">
-                <p className="mb-2 text-xs">Cancelled moves:</p>
-                <p className="font-bold text-lg">32</p>
-              </div>
+            {/* Stats Cards */}
+            <div className="grid gap-4 md:grid-cols-4 w-full">
+              <StatsCard title="Total moves:" value="32" />
+              <StatsCard title="Upcoming moves:" value="32" />
+              <StatsCard title="Completed moves:" value="32" />
+              <StatsCard title="Cancelled moves:" value="32" />
             </div>
 
-            {/* Upcoming moves */}
+            {/* Recent Moves Section */}
             <div className="flex flex-col">
-              <div className="border-1 border-gray-300 h-24 md:h-16 p-2 rounded-t-md items-center flex flex-col md:flex-row justify-between md:p-4">
+              <div className="border border-gray-300 h-24 md:h-16 p-2 rounded-t-md items-center flex flex-col md:flex-row justify-between md:p-4">
                 <p className="font-montserrat font-bold text-sm leading-6 tracking-normal">
                   Recent Moves
                 </p>
-                <div className="flex items-center justify-center p-0.5 rounded border-gray-200 h-12 border-1 gap-0">
-                  <Button
-                    type="button"
+                <div className="flex items-center justify-center p-0.5 rounded border-gray-200 h-12 border gap-0">
+                  <StatusButton
+                    status="Completed"
+                    currentStatus={state.status}
                     onClick={() =>
                       dispatch({ type: "SET_STATUS", payload: "Completed" })
                     }
-                    className={`text-xs font-semibold border-none rounded focus:outline-none focus:ring-2 focus:ring-white ${
-                      state.status === "Completed"
-                        ? "bg-black text-white"
-                        : "bg-gray-200 text-black"
-                    }`}
-                  >
-                    Completed
-                  </Button>
-                  <Button
-                    type="button"
+                  />
+                  <StatusButton
+                    status="Pending"
+                    currentStatus={state.status}
                     onClick={() =>
                       dispatch({ type: "SET_STATUS", payload: "pending" })
                     }
-                    className={`text-xs font-semibold border-none rounded focus:outline-none focus:ring-2 focus:ring-white ${
-                      state.status === "pending"
-                        ? "bg-black text-white"
-                        : "bg-gray-200 text-black"
-                    }`}
-                  >
-                    Pending
-                  </Button>
+                  />
                 </div>
               </div>
 
-              <div className="border border-gray-300 px-2 py-6 md:p-4 w-full h-auto">
-                {/* Move time and confirmation */}
+              {/* Move Details */}
+              <div className="border border-gray-300 px-2 py-12 mb-12 md:p-4 w-full">
+                {/* Move Header */}
                 <div className="flex justify-between items-center">
                   <p className="lg:text-sm text-xs font-semibold">
                     Thur, Dec 32{" "}
@@ -264,7 +346,7 @@ export default function Page() {
                     </span>
                   </p>
 
-                  {/* Confirmed and Drop down Menu */}
+                  {/* Actions */}
                   <div className="flex items-center">
                     <p className="text-green-500 text-xs lg:text-sm lg:font-semibold">
                       Completed
@@ -306,68 +388,38 @@ export default function Page() {
                       </DropdownMenuContent>
                     </DropdownMenu>
 
-                    <AlertDialog
+                    {/* Dialogs */}
+                    <ConfirmationDialog
                       open={state.showCompleteDialog}
                       onOpenChange={(val) =>
                         dispatch({ type: "TOGGLE_COMPLETE_DIALOG", payload: val })
                       }
-                    >
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Mark move as completed?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. Are you sure you want to Mark
-                            move as completed?
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Go back</AlertDialogCancel>
-                          <AlertDialogAction onClick={handleCompleted}>
-                            Yes, complete move.
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                      title="Mark move as completed?"
+                      description="This action cannot be undone. Are you sure you want to Mark move as completed?"
+                      confirmText="Yes, complete move."
+                      onConfirm={handleCompleted}
+                    />
 
-                    {/* Cancel Appointment Dialog */}
-                    <AlertDialog
+                    <ConfirmationDialog
                       open={state.showCancelDialog}
                       onOpenChange={(val) =>
                         dispatch({ type: "TOGGLE_CANCEL_DIALOG", payload: val })
                       }
-                    >
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Cancel this move?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. Are you sure you want to cancel
-                            this move request?
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Go back</AlertDialogCancel>
-                          <AlertDialogAction onClick={handleCancel}>
-                            Yes, cancel cancel move request.
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                      title="Cancel this move?"
+                      description="This action cannot be undone. Are you sure you want to cancel this move request?"
+                      confirmText="Yes, cancel move request."
+                      onConfirm={handleCancel}
+                    />
                   </div>
                 </div>
 
-                {/* Move Details */}
+                {/* Collapsible Move Details */}
                 <Collapsible
                   open={state.isOpen}
                   onOpenChange={(val) => dispatch({ type: "SET_OPEN", payload: val })}
                 >
-                  {/* DIv for address and chevron */}
-                  <div id="outer" className="py-6 w-full">
-                    {/* INNER ROW: Address + Chevron */}
-                    <div
-                      id="inner"
-                      className="flex justify-between items-center w-full "
-                    >
-                      {/* Address block */}
+                  <div className="py-6 w-full">
+                    <div className="flex justify-between items-center w-full">
                       <div className="flex-1 p-0">
                         <p className="lg:text-sm text-xs font-semibold">
                           From:{" "}
@@ -383,22 +435,20 @@ export default function Page() {
                         </p>
                       </div>
 
-                      {/* Chevron Button (Trigger) */}
                       <CollapsibleTrigger asChild>
-                        <button className=" border border-gray-300 rounded-md bg-white shadow-sm">
+                        <button className="border border-gray-300 rounded-md bg-white shadow-sm">
                           {state.isOpen ? <ChevronDownIcon /> : <ChevronUpIcon />}
                         </button>
                       </CollapsibleTrigger>
                     </div>
                   </div>
 
-                  {/* Collapsible Content Div*/}
                   <CollapsibleContent className="w-full">
-                    <div className=" bg-white rounded-md">
-                      {/* FOR LARGE SCREEN */}
+                    <div className="bg-white rounded-md">
+                      {/* Desktop View */}
                       <div className="hidden lg:block">
                         <Tabs defaultValue="items" className="w-full">
-                          <TabsList className="grid grid-cols-4 rounded-lg border-1 border-gray-300 bg-white h-auto">
+                          <TabsList className="grid grid-cols-4 rounded-lg border border-gray-300 bg-white">
                             {accordionData.map(({ value, label }) => (
                               <TabsTrigger
                                 key={value}
@@ -410,42 +460,8 @@ export default function Page() {
                             ))}
                           </TabsList>
                           <TabsContent value="items">
-                            <div className="overflow-x-auto rounded-t-xl border border-gray-300 mt-4">
-                              <Table className="min-w-full border-collapse table-auto">
-                                <TableHeader className="sticky top-0 z-10">
-                                  <TableRow className="bg-gray-200">
-                                    <TableHead className="text-sm font-bold text-start px-2">
-                                      Category
-                                    </TableHead>
-                                    <TableHead className="text-sm font-bold text-start px-2">
-                                      Item
-                                    </TableHead>
-                                    <TableHead className="text-sm font-bold text-start px-2">
-                                      Quantity
-                                    </TableHead>
-                                    <TableHead className="w-[500px] text-sm font-bold text-start px-2">
-                                      Special Handling Instruction
-                                    </TableHead>
-                                  </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                  <TableRow>
-                                    <TableCell className="text-start px-2">
-                                      Furniture
-                                    </TableCell>
-                                    <TableCell className="text-start px-2">
-                                      Dinning Table
-                                    </TableCell>
-                                    <TableCell className="text-start px-2">2</TableCell>
-                                    <TableCell className="text-start px-2">
-                                      No instruction added...
-                                    </TableCell>
-                                  </TableRow>
-                                </TableBody>
-                              </Table>
-                            </div>
+                            <ItemsTable />
                           </TabsContent>
-
                           {accordionData.map(({ value, content }) => (
                             <TabsContent key={value} value={value} className="mt-2 bg-white">
                               {content}
@@ -454,49 +470,15 @@ export default function Page() {
                         </Tabs>
                       </div>
 
-                      {/* FOR SMALL AND MEDIUM SCREEN */}
+                      {/* Mobile View */}
                       <div className="lg:hidden">
-                        <Accordion
-                          type="single"
-                          collapsible
-                          className="w-full"
-                          defaultValue="item-1"
-                        >
+                        <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
                           <AccordionItem value="item-1">
                             <AccordionTrigger className="font-bold">
                               Items to be moved
                             </AccordionTrigger>
                             <AccordionContent className="flex flex-col gap-4 text-balance">
-                              <div className="w-full mt-4 rounded-xl border border-gray-300 overflow-hidden">
-                                <div className="w-full overflow-x-auto">
-                                  <table className="min-w-full text-sm table-fixed">
-                                    <thead className="bg-gray-200 text-left sticky top-0 z-10">
-                                      <tr>
-                                        <th className="px-2 py-2 w-1/4 font-bold">
-                                          Category
-                                        </th>
-                                        <th className="px-2 py-2 w-1/4 font-bold">
-                                          Item
-                                        </th>
-                                        <th className="px-2 py-2 w-1/6 font-bold">Qty</th>
-                                        <th className="px-2 py-2 w-1/3 font-bold">
-                                          Special Instructions
-                                        </th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      <tr className="border-t">
-                                        <td className="px-2 py-2 break-words">Furniture</td>
-                                        <td className="px-2 py-2 break-words">Dinning Table</td>
-                                        <td className="px-2 py-2">2</td>
-                                        <td className="px-2 py-2 break-words text-xs text-gray-600">
-                                          No instruction added...
-                                        </td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </div>
+                              <ItemsTable isMobile />
                             </AccordionContent>
                           </AccordionItem>
 
@@ -504,48 +486,17 @@ export default function Page() {
                             <AccordionTrigger className="font-bold">
                               Accessibility & Logistics
                             </AccordionTrigger>
-                            <AccordionContent className="flex flex-col gap-4 text-balance">
-                              <div>
-                                <p className="font-bold">Building type:</p>
-                                <p className="text-xs py-2">Apartment</p>
-                              </div>
-                              <div>
-                                <p className="font-bold ">Building access:</p>
-                                <p className="text-xs py-2">Elevator</p>
-                              </div>
-                              <div className="sm:col-span-2 lg:col-span-1">
-                                <p className="font-bold">Parking instructions:</p>
-                                <p className="text-xs py-2">
-                                  No Parking Instruction added.
-                                </p>
-                              </div>
+                            <AccordionContent>
+                              {accordionData[1].content}
                             </AccordionContent>
                           </AccordionItem>
+
                           <AccordionItem value="item-3">
                             <AccordionTrigger className="font-bold">
                               Movers & Assistance
                             </AccordionTrigger>
-                            <AccordionContent className="flex flex-col gap-4 text-balance">
-                              <div>
-                                <p className="font-bold">Driver:</p>
-                                <p className="text-xs py-2">Yes</p>
-                              </div>
-                              <div>
-                                <p className="font-bold">Movers:</p>
-                                <p className="text-xs py-2">6</p>
-                              </div>
-                              <div>
-                                <p className="font-bold">Unload Needed:</p>
-                                <p className="text-xs py-2">No</p>
-                              </div>
-                              <div>
-                                <p className="font-bold">Equipment Required:</p>
-                                <p className="text-xs py-2">No Equipment added.</p>
-                              </div>
-                              <div>
-                                <p className="font-bold">Truck Type:</p>
-                                <p className="text-xs py-2">Caravan</p>
-                              </div>
+                            <AccordionContent>
+                              {accordionData[2].content}
                             </AccordionContent>
                           </AccordionItem>
 
@@ -553,23 +504,8 @@ export default function Page() {
                             <AccordionTrigger className="font-bold">
                               Contact Information
                             </AccordionTrigger>
-                            <AccordionContent className="flex flex-col gap-4 text-balance">
-                              <div>
-                                <p className="font-bold">First Name:</p>
-                                <p className="text-xs py-2">Ayo</p>
-                              </div>
-                              <div>
-                                <p className="font-bold">Last Name:</p>
-                                <p className="text-xs py-2">John</p>
-                              </div>
-                              <div>
-                                <p className="font-bold">Phone Number:</p>
-                                <p className="text-xs py-2">6393640945</p>
-                              </div>
-                              <div>
-                                <p className="font-bold">Email:</p>
-                                <p className="text-xs py-2">Ayo@gmail.com</p>
-                              </div>
+                            <AccordionContent>
+                              {accordionData[3].content}
                             </AccordionContent>
                           </AccordionItem>
                         </Accordion>

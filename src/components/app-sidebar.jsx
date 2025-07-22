@@ -83,7 +83,7 @@ const items = [
 
   {
     title: "Manage account",
-    url: "/dashboard/manage-account",
+    url: "/manageaccount",
     icon: (active) => (
       <Image
         src={active ? manageuserActive : manageuserinActive}
@@ -97,7 +97,7 @@ const items = [
 
   {
     title: "Sign out",
-    url: "/dashboard/logout",
+    url: "/logout",
     icon: (active) => (
       <Image
         src={active ? logout : logout}

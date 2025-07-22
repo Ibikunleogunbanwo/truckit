@@ -144,7 +144,7 @@ const Searchmovers = () => {
       move__contacts: state.contactInfo,
       agreedToTerms: state.isChecked,
       move_distance: distance,
-      move_status: "initiated"
+      move_status: "initiated" 
     };
 
     if (!state.items || state.items.length === 0) {
