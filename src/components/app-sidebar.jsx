@@ -97,7 +97,7 @@ const items = [
 
   {
     title: "Sign out",
-    url: "/logout",
+    url: "/login",
     icon: (active) => (
       <Image
         src={active ? logout : logout}

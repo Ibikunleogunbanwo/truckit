@@ -1,8 +1,9 @@
 "use client";
+
 import Image from "next/image";
 import img from "../../../assets/images/Frame (1).png";
 import { Button } from "@/components/ui/button";
-import { useReducer } from "react";
+import { useReducer, useMemo, useCallback } from "react";
 import DashboardHeader from "@/components/dashboardheader";
 import {
   ChevronDownIcon,
@@ -10,6 +11,15 @@ import {
   CircleCheck,
   CircleX,
   EllipsisVertical,
+  MapPin,
+  Clock,
+  Calendar,
+  Package,
+  Users,
+  Building,
+  Phone,
+  Mail,
+  Truck,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -48,10 +58,40 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+
+// Constants
+const MOVE_STATUSES = {
+  COMPLETED: "Completed",
+  PENDING: "Pending",
+  CANCELLED: "Cancelled",
+};
+
+const STATS_DATA = [
+  { title: "Total moves", value: "32", icon: Package, color: "text-blue-600" },
+  {
+    title: "Upcoming moves",
+    value: "32",
+    icon: Calendar,
+    color: "text-orange-600",
+  },
+  {
+    title: "Completed moves",
+    value: "32",
+    icon: CircleCheck,
+    color: "text-green-600",
+  },
+  {
+    title: "Cancelled moves",
+    value: "32",
+    icon: CircleX,
+    color: "text-red-600",
+  },
+];
 
 // Initial state
 const initialState = {
-  status: "Completed",
+  status: MOVE_STATUSES.COMPLETED,
   completed: false,
   cancel: false,
   isOpen: false,
@@ -61,86 +101,53 @@ const initialState = {
   showCancelDialog: false,
 };
 
-// Accordion data
-const accordionData = [
-  {
-    value: "items",
-    label: "Items to be moved",
-    content: <div className="text-sm text-gray-70 rounded-md p-4"></div>,
+// Mock data
+const MOCK_MOVE_DATA = {
+  id: "MV-001",
+  date: "Thu, Dec 32",
+  time: "10:30 AM - 12:00 PM",
+  status: MOVE_STATUSES.COMPLETED,
+  from: "123 Maple Street, Toronto, ON",
+  to: "456 Wood Street, Toronto, ON",
+  items: [
+    {
+      category: "Furniture",
+      item: "Dining Table",
+      quantity: 2,
+      specialInstructions: "Handle with care - antique piece",
+    },
+    {
+      category: "Appliances",
+      item: "Refrigerator",
+      quantity: 1,
+      specialInstructions: "Disconnect 24h before move",
+    },
+    {
+      category: "Boxes",
+      item: "Medium Boxes",
+      quantity: 15,
+      specialInstructions: "Fragile items inside",
+    },
+  ],
+  logistics: {
+    buildingType: "Apartment",
+    buildingAccess: "Elevator",
+    parkingInstructions: "Street parking available on north side",
   },
-  {
-    value: "accessibility",
-    label: "Accessibility & Logistics",
-    content: (
-      <div className="grid grid-cols-3 text-sm text-gray-700 rounded-md ml-2">
-        <div>
-          <p className="font-bold">Building type:</p>
-          <p className="text-xs py-2">Apartment</p>
-        </div>
-        <div>
-          <p className="font-bold">Building access:</p>
-          <p className="text-xs py-2">Elevator</p>
-        </div>
-        <div className="sm:col-span-2 lg:col-span-1">
-          <p className="font-bold">Parking instructions:</p>
-          <p className="text-xs py-2">No Parking Instruction added.</p>
-        </div>
-      </div>
-    ),
+  movers: {
+    driver: "Yes",
+    moverCount: 6,
+    unloadNeeded: "No",
+    equipment: "Dolly, Moving blankets, Straps",
+    truckType: "26ft Box Truck",
   },
-  {
-    value: "movers",
-    label: "Movers & Assistance",
-    content: (
-      <div className="grid lg:grid-cols-5 gap-4 text-sm text-gray-700 rounded-md ml-2">
-        <div>
-          <p className="font-bold">Driver:</p>
-          <p className="text-xs py-2">Yes</p>
-        </div>
-        <div>
-          <p className="font-bold">Movers:</p>
-          <p className="text-xs py-2">6</p>
-        </div>
-        <div>
-          <p className="font-bold">Unload Needed:</p>
-          <p className="text-xs py-2">No</p>
-        </div>
-        <div>
-          <p className="font-bold">Equipment Required:</p>
-          <p className="text-xs py-2">No Equipment added.</p>
-        </div>
-        <div>
-          <p className="font-bold">Truck Type:</p>
-          <p className="text-xs py-2">Caravan</p>
-        </div>
-      </div>
-    ),
+  contact: {
+    firstName: "Ayo",
+    lastName: "Johnson",
+    phoneNumber: "(639) 364-0945",
+    email: "ayo.johnson@gmail.com",
   },
-  {
-    value: "contact",
-    label: "Contact Information",
-    content: (
-      <div className="grid grid-cols-5 gap-4 text-sm text-gray-700 rounded-md ml-2">
-        <div>
-          <p className="font-bold">First Name:</p>
-          <p className="text-xs py-2">Ayo</p>
-        </div>
-        <div>
-          <p className="font-bold">Last Name:</p>
-          <p className="text-xs py-2">John</p>
-        </div>
-        <div>
-          <p className="font-bold">Phone Number:</p>
-          <p className="text-xs py-2">6393640945</p>
-        </div>
-        <div>
-          <p className="font-bold">Email:</p>
-          <p className="text-xs py-2">Ayo@gmail.com</p>
-        </div>
-      </div>
-    ),
-  },
-];
+};
 
 // Reducer function
 function reducer(state, action) {
@@ -172,11 +179,22 @@ function reducer(state, action) {
   }
 }
 
-// Reusable Components
-const StatsCard = ({ title, value }) => (
-  <div className="bg-white h-24 rounded-xl border border-gray-300 p-4 place-content-center">
-    <p className="mb-2 text-xs">{title}</p>
-    <p className="font-bold text-lg">{value}</p>
+// Enhanced Components
+const StatsCard = ({ title, value, icon: Icon, color }) => (
+  <div className="group bg-white hover:bg-gray-50 transition-all duration-200 hover:shadow-lg rounded-xl border border-gray-200 p-4 sm:p-6 cursor-pointer">
+    <div className="flex items-center justify-between">
+      <div className="min-w-0 flex-1">
+        <p className="text-[0.5rem] md:text-[0.8rem] lg:text-xs text-gray-600 font-medium mb-1 truncate">
+          {title}
+        </p>
+        <p className="text-xl md:text-2xl font-bold text-gray-900">{value}</p>
+      </div>
+      <div
+        className={`p-2 sm:p-3 rounded-lg bg-gray-50 group-hover:bg-white transition-colors duration-200 ${color} flex-shrink-0`}
+      >
+        <Icon className="h-5 w-5 md:h-6 sm:w-6" />
+      </div>
+    </div>
   </div>
 );
 
@@ -184,64 +202,128 @@ const StatusButton = ({ status, currentStatus, onClick }) => (
   <Button
     type="button"
     onClick={onClick}
-    className={`text-xs font-semibold border-none rounded focus:outline-none focus:ring-2 focus:ring-white ${
-      currentStatus === status ? "bg-black text-white" : "bg-gray-200 text-black"
+    variant="ghost"
+    size="sm"
+    className={`text-xs sm:text-sm font-medium transition-all duration-200 px-2 sm:px-3 py-1.5 sm:py-2 h-auto ${
+      currentStatus === status
+        ? "bg-gray-900 text-white hover:bg-gray-800 shadow-sm"
+        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
     }`}
   >
     {status}
   </Button>
 );
 
-const ItemsTable = ({ isMobile = false }) => {
+const StatusBadge = ({ status }) => {
+  const getStatusStyles = (status) => {
+    switch (status) {
+      case MOVE_STATUSES.COMPLETED:
+        return "bg-green-100 text-green-800 border-green-200";
+      case MOVE_STATUSES.PENDING:
+        return "bg-orange-100 text-orange-800 border-orange-200";
+      case MOVE_STATUSES.CANCELLED:
+        return "bg-red-100 text-red-800 border-red-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
+    }
+  };
+
+  return (
+    <Badge
+      variant="outline"
+      className={`${getStatusStyles(status)} font-medium text-xs`}
+    >
+      {status}
+    </Badge>
+  );
+};
+
+const InfoItem = ({ icon: Icon, label, value, className = "" }) => (
+  <div className={`flex flex-col space-y-1 ${className}`}>
+    <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+      {Icon && <Icon className="h-4 w-4 text-gray-500 flex-shrink-0" />}
+      <span className="truncate">{label}</span>
+    </div>
+    <p className="text-sm text-gray-600 ml-6 break-words">{value}</p>
+  </div>
+);
+
+const ItemsTable = ({ items, isMobile = false }) => {
   if (isMobile) {
     return (
-      <div className="w-full mt-4 rounded-xl border border-gray-300 overflow-hidden">
-        <div className="w-full overflow-x-auto">
-          <table className="min-w-full text-sm table-fixed">
-            <thead className="bg-gray-200 text-left sticky top-0 z-10">
-              <tr>
-                <th className="px-2 py-2 w-1/4 font-bold">Category</th>
-                <th className="px-2 py-2 w-1/4 font-bold">Item</th>
-                <th className="px-2 py-2 w-1/6 font-bold">Qty</th>
-                <th className="px-2 py-2 w-1/3 font-bold">Special Instructions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-t">
-                <td className="px-2 py-2 break-words">Furniture</td>
-                <td className="px-2 py-2 break-words">Dinning Table</td>
-                <td className="px-2 py-2">2</td>
-                <td className="px-2 py-2 break-words text-xs text-gray-600">
-                  No instruction added...
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <div className="space-y-3">
+        {items.map((item, index) => (
+          <div
+            key={index}
+            className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200"
+          >
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
+              <div className="min-w-0 flex-1">
+                <p className="font-medium text-gray-900 text-sm sm:text-base">
+                  {item.item}
+                </p>
+                <p className="text-xs sm:text-sm text-gray-500">
+                  {item.category}
+                </p>
+              </div>
+              <Badge
+                variant="secondary"
+                className="text-xs self-start sm:self-auto"
+              >
+                Qty: {item.quantity}
+              </Badge>
+            </div>
+            <p className="text-xs sm:text-sm text-gray-600 mt-2">
+              <span className="font-medium">Instructions:</span>{" "}
+              {item.specialInstructions}
+            </p>
+          </div>
+        ))}
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-t-xl border border-gray-300 mt-4">
-      <Table className="min-w-full border-collapse table-auto">
-        <TableHeader className="sticky top-0 z-10">
-          <TableRow className="bg-gray-200">
-            <TableHead className="text-sm font-bold text-start px-2">Category</TableHead>
-            <TableHead className="text-sm font-bold text-start px-2">Item</TableHead>
-            <TableHead className="text-sm font-bold text-start px-2">Quantity</TableHead>
-            <TableHead className="w-[500px] text-sm font-bold text-start px-2">
-              Special Handling Instruction
+    <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-gray-50">
+            <TableHead className="font-semibold text-gray-900 text-sm">
+              Category
+            </TableHead>
+            <TableHead className="font-semibold text-gray-900 text-sm">
+              Item
+            </TableHead>
+            <TableHead className="font-semibold text-gray-900 text-sm">
+              Quantity
+            </TableHead>
+            <TableHead className="font-semibold text-gray-900 text-sm">
+              Special Instructions
             </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell className="text-start px-2">Furniture</TableCell>
-            <TableCell className="text-start px-2">Dinning Table</TableCell>
-            <TableCell className="text-start px-2">2</TableCell>
-            <TableCell className="text-start px-2">No instruction added...</TableCell>
-          </TableRow>
+          {items.map((item, index) => (
+            <TableRow
+              key={index}
+              className="hover:bg-gray-50 transition-colors"
+            >
+              <TableCell className="font-medium text-sm">
+                {item.category}
+              </TableCell>
+              <TableCell className="text-sm">{item.item}</TableCell>
+              <TableCell>
+                <Badge variant="secondary" className="text-xs">
+                  {item.quantity}
+                </Badge>
+              </TableCell>
+              <TableCell className="text-xs sm:text-sm text-gray-600 max-w-xs">
+                <div className="truncate" title={item.specialInstructions}>
+                  {item.specialInstructions}
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </div>
@@ -254,17 +336,31 @@ const ConfirmationDialog = ({
   title,
   description,
   confirmText,
-  onConfirm
+  onConfirm,
+  isDestructive = false,
 }) => (
   <AlertDialog open={open} onOpenChange={onOpenChange}>
-    <AlertDialogContent>
+    <AlertDialogContent className="sm:max-w-lg mx-4 sm:mx-auto">
       <AlertDialogHeader>
-        <AlertDialogTitle>{title}</AlertDialogTitle>
-        <AlertDialogDescription>{description}</AlertDialogDescription>
+        <AlertDialogTitle className="text-lg font-semibold">
+          {title}
+        </AlertDialogTitle>
+        <AlertDialogDescription className="text-gray-600 text-sm">
+          {description}
+        </AlertDialogDescription>
       </AlertDialogHeader>
-      <AlertDialogFooter>
-        <AlertDialogCancel>Go back</AlertDialogCancel>
-        <AlertDialogAction onClick={onConfirm}>{confirmText}</AlertDialogAction>
+      <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+        <AlertDialogCancel className="w-full sm:w-auto">
+          Cancel
+        </AlertDialogCancel>
+        <AlertDialogAction
+          onClick={onConfirm}
+          className={`w-full sm:w-auto ${
+            isDestructive ? "bg-red-600 text-white hover:bg-red-700" : ""
+          }`}
+        >
+          {confirmText}
+        </AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>
@@ -274,250 +370,502 @@ const ConfirmationDialog = ({
 export default function DashboardPage() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const handleCompleted = () => {
+  const handleCompleted = useCallback(() => {
     dispatch({ type: "MARK_COMPLETED" });
-    toast.success("Move has been completed");
-  };
+    toast.success("Move has been marked as completed");
+  }, []);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     dispatch({ type: "MARK_CANCELED" });
-    toast.error("Move has been Cancelled Successfully");
-  };
+    toast.error("Move has been cancelled successfully");
+  }, []);
+
+  const filteredMoves = useMemo(() => {
+    // In a real app, this would filter based on state.status
+    return [MOCK_MOVE_DATA];
+  }, [state.status]);
 
   return (
-    <div className="w-full min-h-screen md:mt-22">
-      <div className="md:mt-4 fixed top-0 z-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Fixed Header */}
+      <div className="fixed top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-gray-200">
         <DashboardHeader />
       </div>
 
-      <div className="flex h-screen">
-        <div className="py-10 md:py-6 px-6 mb-4 md:mb-0 mt-5 w-full">
+      <div className="pt-20 sm:pt-24 pb-12 sm:pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
           {/* Greeting Section */}
-          <div className="flex gap-2 px-5">
-            <p className="text-xs text-black font-bold">Good Morning, </p>
-            <div className="flex gap-2">
-              <span className="text-xs text-gray-400">Abdulrahman </span>
-              <Image src={img} alt="sun image" height={20} width={20} />
+          <div className="mb-8 sm:mb-12">
+            <div className="flex items-center gap-3 bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xs md:text-xl font-bold text-gray-900 truncate">
+                  Good Morning, Abdulrahman
+                </h1>
+                <p className="text-gray-600 mt-1 text-sm sm:text-base">
+                  Here's what's happening with your moves today
+                </p>
+              </div>
+              <div className="flex-shrink-0">
+                <Image
+                  src={img || "/placeholder.svg"}
+                  alt="Greeting icon"
+                  height={28}
+                  width={28}
+                  className="opacity-80 sm:h-8 sm:w-8"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Main Content */}
-          <div className="flex flex-1 flex-col gap-4 md:p-4 pt-6 w-full">
-            {/* Stats Cards */}
-            <div className="grid gap-4 md:grid-cols-4 w-full">
-              <StatsCard title="Total moves:" value="32" />
-              <StatsCard title="Upcoming moves:" value="32" />
-              <StatsCard title="Completed moves:" value="32" />
-              <StatsCard title="Cancelled moves:" value="32" />
-            </div>
+          {/* Stats Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-12">
+            {STATS_DATA.map((stat, index) => (
+              <StatsCard key={index} {...stat} />
+            ))}
+          </div>
 
-            {/* Recent Moves Section */}
-            <div className="flex flex-col">
-              <div className="border border-gray-300 h-24 md:h-16 p-2 rounded-t-md items-center flex flex-col md:flex-row justify-between md:p-4">
-                <p className="font-montserrat font-bold text-sm leading-6 tracking-normal">
-                  Recent Moves
-                </p>
-                <div className="flex items-center justify-center p-0.5 rounded border-gray-200 h-12 border gap-0">
-                  <StatusButton
-                    status="Completed"
-                    currentStatus={state.status}
-                    onClick={() =>
-                      dispatch({ type: "SET_STATUS", payload: "Completed" })
-                    }
-                  />
-                  <StatusButton
-                    status="Pending"
-                    currentStatus={state.status}
-                    onClick={() =>
-                      dispatch({ type: "SET_STATUS", payload: "pending" })
-                    }
-                  />
+          {/* Recent Moves Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            {/* Section Header */}
+            <div className="border-b border-gray-200 p-4 sm:p-6">
+              <div className="flex flex-col gap-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Recent Moves
+                  </h2>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Manage and track your moving requests
+                  </p>
+                </div>
+
+                {/* Status Filter Buttons */}
+                <div className="flex items-center gap-1 p-1 bg-white rounded-lg overflow-x-auto">
+                  {Object.values(MOVE_STATUSES).map((status) => (
+                    <StatusButton
+                      key={status}
+                      status={status}
+                      currentStatus={state.status}
+                      onClick={() =>
+                        dispatch({ type: "SET_STATUS", payload: status })
+                      }
+                    />
+                  ))}
                 </div>
               </div>
+            </div>
 
-              {/* Move Details */}
-              <div className="border border-gray-300 px-2 py-12 mb-12 md:p-4 w-full">
-                {/* Move Header */}
-                <div className="flex justify-between items-center">
-                  <p className="lg:text-sm text-xs font-semibold">
-                    Thur, Dec 32{" "}
-                    <span className="text-gray-400 text-xs lg:text-sm block">
-                      10:30pm to 12pm
-                    </span>
-                  </p>
-
-                  {/* Actions */}
-                  <div className="flex items-center">
-                    <p className="text-green-500 text-xs lg:text-sm lg:font-semibold">
-                      Completed
-                    </p>
-
-                    <DropdownMenu
-                      open={state.openCompletion}
-                      onOpenChange={(val) =>
-                        dispatch({ type: "SET_OPEN_COMPLETION", payload: val })
-                      }
-                    >
-                      <DropdownMenuTrigger asChild>
-                        <Button aria-label="Open menu">
-                          <EllipsisVertical className="text-teal-500 bg-teal-100 size-6" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem
-                          onSelect={() =>
-                            dispatch({ type: "TOGGLE_COMPLETE_DIALOG", payload: true })
-                          }
-                        >
-                          <div className="flex gap-2 py-2 items-center text-sm cursor-pointer w-full">
-                            <CircleCheck />
-                            Mark move as completed
-                          </div>
-                        </DropdownMenuItem>
-
-                        <DropdownMenuItem
-                          onSelect={() =>
-                            dispatch({ type: "TOGGLE_CANCEL_DIALOG", payload: true })
-                          }
-                        >
-                          <div className="flex gap-2 items-center py-2 text-sm text-red-500 cursor-pointer w-full">
-                            <CircleX />
-                            Cancel appointment
-                          </div>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-
-                    {/* Dialogs */}
-                    <ConfirmationDialog
-                      open={state.showCompleteDialog}
-                      onOpenChange={(val) =>
-                        dispatch({ type: "TOGGLE_COMPLETE_DIALOG", payload: val })
-                      }
-                      title="Mark move as completed?"
-                      description="This action cannot be undone. Are you sure you want to Mark move as completed?"
-                      confirmText="Yes, complete move."
-                      onConfirm={handleCompleted}
-                    />
-
-                    <ConfirmationDialog
-                      open={state.showCancelDialog}
-                      onOpenChange={(val) =>
-                        dispatch({ type: "TOGGLE_CANCEL_DIALOG", payload: val })
-                      }
-                      title="Cancel this move?"
-                      description="This action cannot be undone. Are you sure you want to cancel this move request?"
-                      confirmText="Yes, cancel move request."
-                      onConfirm={handleCancel}
-                    />
-                  </div>
-                </div>
-
-                {/* Collapsible Move Details */}
-                <Collapsible
-                  open={state.isOpen}
-                  onOpenChange={(val) => dispatch({ type: "SET_OPEN", payload: val })}
+            {/* Move Cards */}
+            <div className="p-4 sm:p-6 lg:p-8">
+              {filteredMoves.map((move) => (
+                <div
+                  key={move.id}
+                  className="border border-gray-200 rounded-lg p-5 sm:p-6 lg:p-8 hover:shadow-md transition-shadow duration-200"
                 >
-                  <div className="py-6 w-full">
-                    <div className="flex justify-between items-center w-full">
-                      <div className="flex-1 p-0">
-                        <p className="lg:text-sm text-xs font-semibold">
-                          From:{" "}
-                          <span className="text-gray-400 text-[10px] lg:text-sm">
-                            123 Maple Street, Toronto
+                  {/* Move Header */}
+                  <div className="flex flex-col gap-4 mb-6">
+                    {/* Date/Time and Actions Row */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4 min-w-0">
+                        <div className="flex items-center gap-2 text-gray-900 min-w-0">
+                          <Calendar className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                          <span className="font-medium text-sm sm:text-base truncate">
+                            {move.date}
                           </span>
-                          <span className="block gap-2">
-                            To:{" "}
-                            <span className="text-gray-400 text-xs lg:text-sm">
-                              456 Wood Street, Toronto
-                            </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-600 min-w-0">
+                          <Clock className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                          <span className="text-xs sm:text-sm truncate">
+                            {move.time}
                           </span>
-                        </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between sm:justify-end gap-3 flex-shrink-0">
+                        <StatusBadge status={move.status} />
+                        <DropdownMenu
+                          open={state.openCompletion}
+                          onOpenChange={(val) =>
+                            dispatch({
+                              type: "SET_OPEN_COMPLETION",
+                              payload: val,
+                            })
+                          }
+                        >
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-2 flex-shrink-0"
+                            >
+                              <EllipsisVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuItem
+                              onSelect={() =>
+                                dispatch({
+                                  type: "TOGGLE_COMPLETE_DIALOG",
+                                  payload: true,
+                                })
+                              }
+                              className="flex items-center gap-2 text-green-700"
+                            >
+                              <CircleCheck className="h-4 w-4" />
+                              Mark as completed
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onSelect={() =>
+                                dispatch({
+                                  type: "TOGGLE_CANCEL_DIALOG",
+                                  payload: true,
+                                })
+                              }
+                              className="flex items-center gap-2 text-red-700"
+                            >
+                              <CircleX className="h-4 w-4" />
+                              Cancel appointment
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Move Locations */}
+                  <Collapsible
+                    open={state.isOpen}
+                    onOpenChange={(val) =>
+                      dispatch({ type: "SET_OPEN", payload: val })
+                    }
+                  >
+                    <div className="flex flex-col gap-4">
+                      <div className="flex-1 space-y-3 sm:space-y-4">
+                        <div className="flex items-start gap-3">
+                          <MapPin className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-gray-700">
+                              From
+                            </p>
+                            <p className="text-sm text-gray-600 break-words">
+                              {move.from}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <MapPin className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-gray-700">
+                              To
+                            </p>
+                            <p className="text-sm text-gray-600 break-words">
+                              {move.to}
+                            </p>
+                          </div>
+                        </div>
                       </div>
 
                       <CollapsibleTrigger asChild>
-                        <button className="border border-gray-300 rounded-md bg-white shadow-sm">
-                          {state.isOpen ? <ChevronDownIcon /> : <ChevronUpIcon />}
-                        </button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full sm:w-auto sm:self-start bg-transparent"
+                        >
+                          <span className="flex items-center justify-center gap-2">
+                            {state.isOpen ? (
+                              <>
+                                <ChevronUpIcon className="h-4 w-4" />
+                                <span>Hide Details</span>
+                              </>
+                            ) : (
+                              <>
+                                <ChevronDownIcon className="h-4 w-4" />
+                                <span>Show Details</span>
+                              </>
+                            )}
+                          </span>
+                        </Button>
                       </CollapsibleTrigger>
                     </div>
-                  </div>
 
-                  <CollapsibleContent className="w-full">
-                    <div className="bg-white rounded-md">
-                      {/* Desktop View */}
-                      <div className="hidden lg:block">
-                        <Tabs defaultValue="items" className="w-full">
-                          <TabsList className="grid grid-cols-4 rounded-lg border border-gray-300 bg-white">
-                            {accordionData.map(({ value, label }) => (
+                    <CollapsibleContent className="mt-8">
+                      <div className="border-t border-b border-gray-200">
+                        {/* Desktop/Tablet Tabs */}
+                        <div className="hidden lg:block">
+                          <Tabs defaultValue="items" className="w-full">
+                            <TabsList className="grid grid-cols-4 w-full bg-white p-1 mb-6">
                               <TabsTrigger
-                                key={value}
-                                value={value}
-                                className="w-full px-3 py-2 text-sm font-semibold rounded-md bg-white hover:bg-gray-100 transition-colors"
+                                value="items"
+                                className="flex items-center gap-2 text-sm py-3"
                               >
-                                {label}
+                                <Package className="h-4 w-4" />
+                                <span>Items</span>
                               </TabsTrigger>
-                            ))}
-                          </TabsList>
-                          <TabsContent value="items">
-                            <ItemsTable />
-                          </TabsContent>
-                          {accordionData.map(({ value, content }) => (
-                            <TabsContent key={value} value={value} className="mt-2 bg-white">
-                              {content}
+                              <TabsTrigger
+                                value="logistics"
+                                className="flex items-center gap-2 text-sm py-3"
+                              >
+                                <Building className="h-4 w-4" />
+                                <span>Logistics</span>
+                              </TabsTrigger>
+                              <TabsTrigger
+                                value="movers"
+                                className="flex items-center gap-2 text-sm py-3"
+                              >
+                                <Users className="h-4 w-4" />
+                                <span>Movers</span>
+                              </TabsTrigger>
+                              <TabsTrigger
+                                value="contact"
+                                className="flex items-center gap-2 text-sm py-3"
+                              >
+                                <Phone className="h-4 w-4" />
+                                <span>Contact</span>
+                              </TabsTrigger>
+                            </TabsList>
+
+                            <TabsContent value="items" className="mt-0 pt-6">
+                              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                                <ItemsTable items={move.items} />
+                              </div>
                             </TabsContent>
-                          ))}
-                        </Tabs>
+
+                            <TabsContent
+                              value="logistics"
+                              className="mt-0 pt-6"
+                            >
+                              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 bg-gray-50 rounded-lg">
+                                  <InfoItem
+                                    icon={Building}
+                                    label="Building Type"
+                                    value={move.logistics.buildingType}
+                                  />
+                                  <InfoItem
+                                    icon={Building}
+                                    label="Building Access"
+                                    value={move.logistics.buildingAccess}
+                                  />
+                                  <InfoItem
+                                    label="Parking Instructions"
+                                    value={move.logistics.parkingInstructions}
+                                    className="sm:col-span-2 lg:col-span-1"
+                                  />
+                                </div>
+                              </div>
+                            </TabsContent>
+
+                            <TabsContent value="movers" className="mt-0 pt-6">
+                              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 p-6 bg-gray-50 rounded-lg">
+                                  <InfoItem
+                                    icon={Users}
+                                    label="Driver"
+                                    value={move.movers.driver}
+                                  />
+                                  <InfoItem
+                                    icon={Users}
+                                    label="Movers"
+                                    value={move.movers.moverCount}
+                                  />
+                                  <InfoItem
+                                    label="Unload Needed"
+                                    value={move.movers.unloadNeeded}
+                                  />
+                                  <InfoItem
+                                    label="Equipment"
+                                    value={move.movers.equipment}
+                                    className="sm:col-span-2 lg:col-span-1"
+                                  />
+                                  <InfoItem
+                                    icon={Truck}
+                                    label="Truck Type"
+                                    value={move.movers.truckType}
+                                  />
+                                </div>
+                              </div>
+                            </TabsContent>
+
+                            <TabsContent value="contact" className="mt-0 pt-6">
+                              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-6 bg-gray-50 rounded-lg">
+                                  <InfoItem
+                                    label="First Name"
+                                    value={move.contact.firstName}
+                                  />
+                                  <InfoItem
+                                    label="Last Name"
+                                    value={move.contact.lastName}
+                                  />
+                                  <InfoItem
+                                    icon={Phone}
+                                    label="Phone Number"
+                                    value={move.contact.phoneNumber}
+                                  />
+                                  <InfoItem
+                                    icon={Mail}
+                                    label="Email"
+                                    value={move.contact.email}
+                                    className="sm:col-span-2 lg:col-span-1"
+                                  />
+                                </div>
+                              </div>
+                            </TabsContent>
+                          </Tabs>
+                        </div>
+
+                        {/* Mobile Accordion */}
+                        <div className="lg:hidden bg-white border rounded-lg divide-y divide-gray-200">
+                          <Accordion
+                            type="single"
+                            collapsible
+                            className="w-full"
+                          >
+                            <AccordionItem value="items">
+                              <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline text-sm">
+                                <div className="flex items-center gap-2">
+                                  <Package className="h-4 w-4" />
+                                  <span className="font-medium">
+                                    Items to be moved
+                                  </span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 sm:px-6 pt-2 pb-4">
+                                <ItemsTable items={move.items} isMobile />
+                              </AccordionContent>
+                            </AccordionItem>
+
+                            <AccordionItem value="logistics">
+                              <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline text-sm">
+                                <div className="flex items-center gap-2">
+                                  <Building className="h-4 w-4" />
+                                  <span className="font-medium">
+                                    Accessibility & Logistics
+                                  </span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 sm:px-6 pt-2 pb-4 space-y-6">
+                                <InfoItem
+                                  icon={Building}
+                                  label="Building Type"
+                                  value={move.logistics.buildingType}
+                                />
+                                <InfoItem
+                                  icon={Building}
+                                  label="Building Access"
+                                  value={move.logistics.buildingAccess}
+                                />
+                                <InfoItem
+                                  label="Parking Instructions"
+                                  value={move.logistics.parkingInstructions}
+                                />
+                              </AccordionContent>
+                            </AccordionItem>
+
+                            <AccordionItem value="movers">
+                              <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline text-sm">
+                                <div className="flex items-center gap-2">
+                                  <Users className="h-4 w-4" />
+                                  <span className="font-medium">
+                                    Movers & Assistance
+                                  </span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 sm:px-6 pt-2 pb-4 space-y-6">
+                                <div className="grid grid-cols-2 gap-6">
+                                  <InfoItem
+                                    icon={Users}
+                                    label="Driver"
+                                    value={move.movers.driver}
+                                  />
+                                  <InfoItem
+                                    icon={Users}
+                                    label="Movers"
+                                    value={move.movers.moverCount}
+                                  />
+                                </div>
+                                <InfoItem
+                                  label="Unload Needed"
+                                  value={move.movers.unloadNeeded}
+                                />
+                                <InfoItem
+                                  label="Equipment"
+                                  value={move.movers.equipment}
+                                />
+                                <InfoItem
+                                  icon={Truck}
+                                  label="Truck Type"
+                                  value={move.movers.truckType}
+                                />
+                              </AccordionContent>
+                            </AccordionItem>
+
+                            <AccordionItem value="contact">
+                              <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline text-sm">
+                                <div className="flex items-center gap-2">
+                                  <Phone className="h-4 w-4" />
+                                  <span className="font-medium">
+                                    Contact Information
+                                  </span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 sm:px-6 pt-2 pb-4 space-y-6">
+                                <div className="grid gap-6">
+                                  <InfoItem
+                                    label="First Name"
+                                    value={move.contact.firstName}
+                                  />
+                                  <InfoItem
+                                    label="Last Name"
+                                    value={move.contact.lastName}
+                                  />
+                                </div>
+                                <InfoItem
+                                  icon={Phone}
+                                  label="Phone Number"
+                                  value={move.contact.phoneNumber}
+                                />
+                                <InfoItem
+                                  icon={Mail}
+                                  label="Email"
+                                  value={move.contact.email}
+                                />
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                        </div>
                       </div>
-
-                      {/* Mobile View */}
-                      <div className="lg:hidden">
-                        <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-                          <AccordionItem value="item-1">
-                            <AccordionTrigger className="font-bold">
-                              Items to be moved
-                            </AccordionTrigger>
-                            <AccordionContent className="flex flex-col gap-4 text-balance">
-                              <ItemsTable isMobile />
-                            </AccordionContent>
-                          </AccordionItem>
-
-                          <AccordionItem value="item-2">
-                            <AccordionTrigger className="font-bold">
-                              Accessibility & Logistics
-                            </AccordionTrigger>
-                            <AccordionContent>
-                              {accordionData[1].content}
-                            </AccordionContent>
-                          </AccordionItem>
-
-                          <AccordionItem value="item-3">
-                            <AccordionTrigger className="font-bold">
-                              Movers & Assistance
-                            </AccordionTrigger>
-                            <AccordionContent>
-                              {accordionData[2].content}
-                            </AccordionContent>
-                          </AccordionItem>
-
-                          <AccordionItem value="item-4">
-                            <AccordionTrigger className="font-bold">
-                              Contact Information
-                            </AccordionTrigger>
-                            <AccordionContent>
-                              {accordionData[3].content}
-                            </AccordionContent>
-                          </AccordionItem>
-                        </Accordion>
-                      </div>
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
-              </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Confirmation Dialogs */}
+      <ConfirmationDialog
+        open={state.showCompleteDialog}
+        onOpenChange={(val) =>
+          dispatch({ type: "TOGGLE_COMPLETE_DIALOG", payload: val })
+        }
+        title="Mark move as completed?"
+        description="This action cannot be undone. The move status will be permanently changed to completed."
+        confirmText="Yes, mark as completed"
+        onConfirm={handleCompleted}
+      />
+
+      <ConfirmationDialog
+        open={state.showCancelDialog}
+        onOpenChange={(val) =>
+          dispatch({ type: "TOGGLE_CANCEL_DIALOG", payload: val })
+        }
+        title="Cancel this move?"
+        description="This action cannot be undone. Are you sure you want to cancel this move request?"
+        confirmText="Yes, cancel move"
+        onConfirm={handleCancel}
+        isDestructive
+      />
     </div>
   );
 }

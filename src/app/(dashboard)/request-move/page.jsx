@@ -180,12 +180,11 @@ const RequestMove = () => {
   };
 
   return (
-    <div className="w-full mt-14 md:mt-22">
-      <div className="mt-4 fixed top-0 z-50">
-        <DashboardHeader />
-      </div>
-
-      <div className="w-full max-w-screen-xl mx-auto px-4 py-6 text-sm">
+    <div className="min-h-screen bg-gray-50">
+    <div className="fixed top-0 z-50 w-full bg-white shadow-sm">
+      <DashboardHeader />
+    </div>
+      <div className="w-full max-w-screen-xl mt-18 mx-auto px-4 py-6 text-sm">
         <p className="text-lg font-extrabold font-inknut-antiqua mb-4">
           Request Move
         </p>

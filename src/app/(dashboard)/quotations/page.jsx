@@ -220,15 +220,15 @@ const Page = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-white">
-      {/* Fixed header */}
-      <div className="fixed top-0 z-50 w-full">
-        <DashboardHeader />
-      </div>
+    <div className="min-h-screen bg-gray-50">
+    {/* Fixed Header */}
+    <div className="fixed top-0 z-50 w-full bg-white shadow-sm">
+      <DashboardHeader />
+    </div>
 
-      <div className="pt-20 pb-8">
+      <div className="pt-20 pb-8 mt-8">
         <div className="mx-4 sm:mx-6 lg:mx-8">
-          <h1 className="text-2xl font-extrabold font-inknut-antiqua mb-6 text-gray-900">
+          <h1 className="text-xl md:text-2xl font-extrabold font-inknut-antiqua mb-6 text-gray-900">
             Your Move Quotations
           </h1>
 
